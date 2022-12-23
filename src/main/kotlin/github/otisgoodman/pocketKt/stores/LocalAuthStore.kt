@@ -1,26 +1,36 @@
 package github.otisgoodman.pocketKt.stores
 
 import github.otisgoodman.pocketKt.models.Admin
+import github.otisgoodman.pocketKt.models.utils.BaseAuthModel
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.nio.file.Path
+import kotlin.io.path.Path
 
 open class LocalAuthStore(
-    baseModel: Admin?, baseToken: String?,
-    fileName: String = "pocketbase_auth.data", filePath: Path
+    baseModel: BaseAuthModel?, baseToken: String?,
+    fileName: String = "pocketbase_auth.data", filePath: Path? = null
 ) : BaseAuthStore(baseModel, baseToken) {
-    val file: File
+    private val file: File
+    var filePath: Path
 
     init {
 //      MAY NOT BE VALID CHECK LATER
-        this.file = File(filePath.toString(), fileName)
-    }
+        if (filePath == null) this.filePath = Path(System.getProperty("user.dir"))
+        else this.filePath = filePath
 
-    fun get(): ModelTokenPair {
-        return Json.decodeFromString<ModelTokenPair>(file.readText())
+        this.file = File(this.filePath.toString(), fileName)
+        if (file.exists()){
+            val pair = Json.decodeFromString<ModelTokenPair>(file.readText())
+            this.token = pair.token
+            this.model = pair.model
+        }else{
+            file.createNewFile()
+            save(ModelTokenPair(model, token))
+        }
     }
 
     fun save(value: ModelTokenPair) {
@@ -34,6 +44,6 @@ open class LocalAuthStore(
     }
 
     @Serializable
-    data class ModelTokenPair(val model: Admin?, val token: String?)
+    data class ModelTokenPair(val model: BaseAuthModel?, val token: String?)
 
 }

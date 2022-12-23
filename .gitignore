@@ -26,3 +26,8 @@ hs_err_pid*
 .idea
 build/*
 !gradle/wrapper/gradle-wrapper.jar
+pocketbase
+/pb_data/*
+/pb_migrations/*
+pocketbase_auth.data
+*.http

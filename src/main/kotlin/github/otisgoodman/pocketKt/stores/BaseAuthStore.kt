@@ -1,12 +1,13 @@
 package github.otisgoodman.pocketKt.stores
 
 import github.otisgoodman.pocketKt.models.Admin
+import github.otisgoodman.pocketKt.models.utils.BaseAuthModel
 
-open class BaseAuthStore(baseModel: Admin?, baseToken: String?) {
+open class BaseAuthStore(baseModel: BaseAuthModel?, baseToken: String?) {
 
     //Watered down from JS SDK may improve later although Kotlin probably doesn't use cookies
     //    @TODO Document
-    var model: Admin?
+    var model: BaseAuthModel?
     var token: String?
 
     init {
@@ -14,7 +15,7 @@ open class BaseAuthStore(baseModel: Admin?, baseToken: String?) {
         this.token = baseToken
     }
 
-    fun save(model: Admin?, token: String?) {
+    fun save(model: BaseAuthModel?, token: String?) {
         this.model = model
         this.token = token
     }

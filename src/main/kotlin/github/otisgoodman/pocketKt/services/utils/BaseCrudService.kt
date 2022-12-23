@@ -1,6 +1,8 @@
 package github.otisgoodman.pocketKt.services.utils
 
 import github.otisgoodman.pocketKt.Client
+import github.otisgoodman.pocketKt.PocketbaseError
+import github.otisgoodman.pocketKt.PocketbaseException
 import github.otisgoodman.pocketKt.models.utils.BaseModel
 import github.otisgoodman.pocketKt.models.utils.ListResult
 import io.ktor.client.call.*
@@ -45,8 +47,9 @@ abstract class BaseCrudService<T : BaseModel>(client: Client) : BaseService(clie
                 parameters.append("page", page.toString())
                 parameters.append("perPage", perPage.toString())
             }
-        }.body<ListResult<T>>()
-        return response
+        }
+        PocketbaseException.handle(response)
+        return response.body<ListResult<T>>()
     }
 
     protected suspend fun _getOne(basePath: String, id: String, queryParams: Map<String, String>): T {
@@ -55,8 +58,9 @@ abstract class BaseCrudService<T : BaseModel>(client: Client) : BaseService(clie
                 path(basePath, id)
                 queryParams.forEach { parameters.append(it.key, it.value) }
             }
-        }.body<BaseModel>() as T
-        return response
+        }
+        PocketbaseException.handle(response)
+        return response.body<BaseModel>() as T
     }
 
 
@@ -68,8 +72,9 @@ abstract class BaseCrudService<T : BaseModel>(client: Client) : BaseService(clie
                 queryParams.forEach { parameters.append(it.key, it.value) }
                 setBody(body)
             }
-        }.body<BaseModel>() as T
-        return response
+        }
+        PocketbaseException.handle(response)
+        return response.body<BaseModel>() as T
     }
 
 
@@ -81,17 +86,21 @@ abstract class BaseCrudService<T : BaseModel>(client: Client) : BaseService(clie
                 queryParams.forEach { parameters.append(it.key, it.value) }
                 setBody(body)
             }
-        }.body<BaseModel>() as T
-        return response
+        }
+
+        PocketbaseException.handle(response)
+        return response.body<BaseModel>() as T
     }
 
     protected suspend fun _delete(basePath: String, id: String, queryParams: Map<String, String>): Boolean {
-        return client.httpClient.delete {
+        val response = client.httpClient.delete {
             url {
                 path(basePath, id)
                 queryParams.forEach { parameters.append(it.key, it.value) }
             }
-        }.run { true }
+        }
+        PocketbaseException.handle(response)
+        return true
     }
 
 }

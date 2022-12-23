@@ -1,20 +1,26 @@
 package github.otisgoodman.pocketKt.services
 
+import github.otisgoodman.pocketKt.AuthResponse
 import github.otisgoodman.pocketKt.Client
+import github.otisgoodman.pocketKt.PocketbaseException
 import github.otisgoodman.pocketKt.models.ExternalAuth
 import github.otisgoodman.pocketKt.models.User
+import github.otisgoodman.pocketKt.models.utils.BaseAuthModel
 import github.otisgoodman.pocketKt.services.utils.CrudService
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 
 //@TODO Document
+//API CONSISTENT
+//UNTESTED
 class UserAuthService(client: Client) : CrudService<User>(client) {
 
-    data class UserAuthResponse(val token: String, val user: User, val data: Map<String, JsonElement>)
 
 
     @Serializable
@@ -30,7 +36,7 @@ class UserAuthService(client: Client) : CrudService<User>(client) {
     data class AuthMethodsList(val emailPassword: Boolean, val authProviders: List<AuthProviderInfo>)
 
 
-    override val baseCrudPath = "/api/users"
+    override val baseCrudPath = "api/collections/users"
 
     override fun decode(data: Map<String, JsonElement>): User {
         return User(data)
@@ -38,11 +44,10 @@ class UserAuthService(client: Client) : CrudService<User>(client) {
 
 
     //May not work
-    suspend fun listAuthMethods(queryParams: Map<String, String>): AuthMethodsList {
+    suspend fun listAuthMethods(): AuthMethodsList {
         val response = client.httpClient.get {
             url {
                 path(baseCrudPath, "auth-methods")
-                queryParams.forEach { parameters.append(it.key, it.value) }
             }
         }.body<Map<String, JsonElement>>()
         val emailPassword = response.getOrDefault("emailPassword", false) as Boolean
@@ -55,23 +60,32 @@ class UserAuthService(client: Client) : CrudService<User>(client) {
     }
 
     suspend fun authWithPassword(
-        email: String, password: String, bodyParams: Map<String, JsonElement>, queryParams: Map<String, String>
-    ): UserAuthResponse {
+        email: String, password: String
+    ): AuthResponse {
         val params = mapOf(
-            *bodyParams.toList().toTypedArray(),
             "identity" to JsonPrimitive(email),
             "password" to JsonPrimitive(password)
         )
         val response = client.httpClient.post {
             url {
                 path(baseCrudPath, "auth-with-password")
-                contentType(ContentType.Application.Json)
-                queryParams.forEach { parameters.append(it.key, it.value) }
-                header("Authorization", "")
-                setBody(Json.encodeToString(params))
             }
-        }.body<UserAuthResponse>()
-        return response
+            header("Authorization", "")
+            contentType(ContentType.Application.Json)
+            setBody(params)
+        }
+        println(response.body<String>())
+        PocketbaseException.handle(response)
+        val json = response.body<String>()
+        println(json)
+        @Serializable
+        class Token(val token: String)
+
+        return AuthResponse(this.client.json.decodeFromString<Token>(json).token,this.client.json.decodeFromString<BaseAuthModel>(json))
+    }
+
+    suspend fun authWithUsername(username: String, password: String): AuthResponse{
+        return authWithPassword(username,password)
     }
 
 
@@ -80,11 +94,9 @@ class UserAuthService(client: Client) : CrudService<User>(client) {
         code: String,
         codeVerifier: String,
         redirectUrl: String,
-        bodyParams: Map<String, JsonElement>,
         queryParams: Map<String, String>
-    ): UserAuthResponse {
+    ): AuthResponse {
         val params = mapOf(
-            *bodyParams.toList().toTypedArray(),
             "provider" to JsonPrimitive(provider),
             "code" to JsonPrimitive(code),
             "codeVerifier" to JsonPrimitive(codeVerifier),
@@ -98,46 +110,80 @@ class UserAuthService(client: Client) : CrudService<User>(client) {
                 header("Authorization", "")
                 setBody(Json.encodeToString(params))
             }
-        }.body<UserAuthResponse>()
-        return response
+        }
+        PocketbaseException.handle(response)
+        return response.body<AuthResponse>()
     }
 
 
-    suspend fun refresh(): UserAuthResponse {
+    suspend fun refresh(): AuthResponse {
         val response = client.httpClient.post {
             url {
                 path(baseCrudPath, "refresh")
                 contentType(ContentType.Application.Json)
             }
-        }.body<UserAuthResponse>()
-        return response
+        }
+        PocketbaseException.handle(response)
+        return response.body<AuthResponse>()
+    }
+
+    suspend fun requestVerification(
+        email: String
+    ): Boolean {
+        val params = mapOf(
+           "email" to JsonPrimitive(email)
+        )
+        val response = client.httpClient.post {
+            url {
+                path(baseCrudPath, "request-verification")
+                contentType(ContentType.Application.Json)
+                setBody(Json.encodeToString(params))
+            }
+        }
+        PocketbaseException.handle(response)
+        return true
+    }
+
+    suspend fun confirmVerification(
+        verificationToken: String
+    ): Boolean {
+        val params = mapOf(
+          "token" to JsonPrimitive(verificationToken)
+        )
+        val response = client.httpClient.post {
+            url {
+                path(baseCrudPath, "confirm-verification")
+                contentType(ContentType.Application.Json)
+                setBody(Json.encodeToString(params))
+            }
+        }
+        PocketbaseException.handle(response)
+        return true
     }
 
     suspend fun requestPasswordReset(
-        email: String, body: Map<String, JsonElement>, queryParams: Map<String, String>
+        email: String
     ): Boolean {
         val params = mapOf(
-            *body.toList().toTypedArray(), "email" to JsonPrimitive(email)
+            "email" to JsonPrimitive(email)
         )
-        return client.httpClient.post {
+        val response = client.httpClient.post {
             url {
                 path(baseCrudPath, "request-password-reset")
                 contentType(ContentType.Application.Json)
-                queryParams.forEach { parameters.append(it.key, it.value) }
                 setBody(Json.encodeToString(params))
             }
-        }.run { true }
+        }
+        PocketbaseException.handle(response)
+        return true
     }
 
     suspend fun confirmPasswordReset(
         passwordResetToken: String,
         password: String,
         passwordConfirm: String,
-        body: Map<String, JsonElement>,
-        queryParams: Map<String, String>
-    ): UserAuthResponse {
+    ): Boolean {
         val params = mapOf(
-            *body.toList().toTypedArray(),
             "token" to JsonPrimitive(passwordResetToken),
             "password" to JsonPrimitive(password),
             "passwordConfirm" to JsonPrimitive(passwordConfirm)
@@ -146,69 +192,35 @@ class UserAuthService(client: Client) : CrudService<User>(client) {
             url {
                 path(baseCrudPath, "confirm-password-reset")
                 contentType(ContentType.Application.Json)
-                queryParams.forEach { parameters.append(it.key, it.value) }
                 setBody(Json.encodeToString(params))
             }
-        }.body<UserAuthResponse>()
-        return response
-    }
-
-    suspend fun requestVerification(
-        email: String, body: Map<String, JsonElement>, queryParams: Map<String, String>
-    ): Boolean {
-        val params = mapOf(
-            *body.toList().toTypedArray(), "email" to JsonPrimitive(email)
-        )
-        return client.httpClient.post {
-            url {
-                path(baseCrudPath, "request-verification")
-                contentType(ContentType.Application.Json)
-                queryParams.forEach { parameters.append(it.key, it.value) }
-                setBody(Json.encodeToString(params))
-            }
-        }.run { true }
-    }
-
-
-    suspend fun confirmVerification(
-        verificationToken: String, body: Map<String, JsonElement>, queryParams: Map<String, String>
-    ): UserAuthResponse {
-        val params = mapOf(
-            *body.toList().toTypedArray(), "token" to JsonPrimitive(verificationToken)
-        )
-        val response = client.httpClient.post {
-            url {
-                path(baseCrudPath, "confirm-verification")
-                contentType(ContentType.Application.Json)
-                queryParams.forEach { parameters.append(it.key, it.value) }
-                setBody(Json.encodeToString(params))
-            }
-        }.body<UserAuthResponse>()
-        return response
+        }
+        PocketbaseException.handle(response)
+        return true
     }
 
     suspend fun requestEmailChange(
-        newEmail: String, body: Map<String, JsonElement>, queryParams: Map<String, String>
+        newEmail: String
     ): Boolean {
         val params = mapOf(
-            *body.toList().toTypedArray(), "newEmail" to JsonPrimitive(newEmail)
+           "newEmail" to JsonPrimitive(newEmail)
         )
-        return client.httpClient.post {
+        val response = client.httpClient.post {
             url {
                 path(baseCrudPath, "request-email-change")
                 contentType(ContentType.Application.Json)
-                queryParams.forEach { parameters.append(it.key, it.value) }
                 setBody(Json.encodeToString(params))
             }
-        }.run { true }
+        }
+        PocketbaseException.handle(response)
+        return true
     }
 
 
     suspend fun confirmEmailChange(
-        emailChangeToken: String, password: String, body: Map<String, JsonElement>, queryParams: Map<String, String>
-    ): UserAuthResponse {
+        emailChangeToken: String, password: String
+    ): Boolean {
         val params = mapOf(
-            *body.toList().toTypedArray(),
             "token" to JsonPrimitive(emailChangeToken),
             "password" to JsonPrimitive(password)
         )
@@ -216,29 +228,30 @@ class UserAuthService(client: Client) : CrudService<User>(client) {
             url {
                 path(baseCrudPath, "confirm-email-change")
                 contentType(ContentType.Application.Json)
-                queryParams.forEach { parameters.append(it.key, it.value) }
                 setBody(Json.encodeToString(params))
             }
-        }.body<UserAuthResponse>()
-        return response
+        }
+        PocketbaseException.handle(response)
+        return true
     }
 
-    suspend fun listExternalAuths(userId: String, queryParams: Map<String, String>): List<ExternalAuth> {
+    suspend fun listExternalAuths(userId: String): List<ExternalAuth> {
         val response = client.httpClient.get {
             url {
                 path(baseCrudPath, userId, "external-auths")
-                queryParams.forEach { parameters.append(it.key, it.value) }
             }
-        }.body<List<ExternalAuth>>()
-        return response
+        }
+        PocketbaseException.handle(response)
+        return response.body<List<ExternalAuth>>()
     }
 
-    suspend fun unlinkExternalAuth(userId: String, provider: String, queryParams: Map<String, String>): Boolean {
-        return client.httpClient.delete {
+    suspend fun unlinkExternalAuth(userId: String, provider: String): Boolean {
+        val response = client.httpClient.delete {
             url {
                 path(baseCrudPath, userId, "external-auths", provider)
-                queryParams.forEach { parameters.append(it.key, it.value) }
             }
-        }.run { true }
+        }
+        PocketbaseException.handle(response)
+        return true
     }
 }

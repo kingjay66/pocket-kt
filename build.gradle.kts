@@ -19,12 +19,12 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
 
+    implementation("com.squareup.moshi:moshi:1.14.0")
+
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 
 
-
-//    @TODO Testing
     testImplementation(kotlin("test"))
     implementation(kotlin("stdlib-jdk8"))
 }

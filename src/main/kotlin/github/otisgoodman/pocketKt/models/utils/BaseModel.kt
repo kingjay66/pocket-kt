@@ -1,20 +1,14 @@
 package github.otisgoodman.pocketKt.models.utils
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonElement
 
 @Serializable
-open class BaseModel(val data: Map<String, JsonElement>) {
-    val id: String
-    val created: String
-    val updated: String
-
-
-    init {
-        this.id = data.getOrDefault("id", "") as String
-        this.created = data.getOrDefault("created", "") as String
-        this.updated = data.getOrDefault("updated", "") as String
-    }
+open class BaseModel(@Transient val data: Map<String, JsonElement> = mapOf()) {
+    val id: String = data.getOrDefault("id", "") as String
+    val created: String = data.getOrDefault("created", "") as String
+    val updated: String = data.getOrDefault("updated", "") as String
 
 
     fun isNew(): Boolean {
