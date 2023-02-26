@@ -1,5 +1,6 @@
 package github.otisgoodman.pocketKt.services
 
+import github.otisgoodman.pocketKt.AuthResponse
 import github.otisgoodman.pocketKt.Client
 import github.otisgoodman.pocketKt.models.Admin
 import github.otisgoodman.pocketKt.services.utils.CrudService
@@ -15,8 +16,6 @@ import kotlinx.serialization.json.JsonPrimitive
 //@TODO Document
 class AdminAuthService(client: Client) : CrudService<Admin>(client) {
 
-    @Serializable
-    data class AdminAuthResponse(val token: String, val admin: Admin, val data: Map<String, JsonElement>)
 
     override val baseCrudPath = "/api/admins"
 
@@ -26,7 +25,7 @@ class AdminAuthService(client: Client) : CrudService<Admin>(client) {
 
     suspend fun authWithPassword(
         email: String, password: String, bodyParams: Map<String, JsonElement>, queryParams: Map<String, String>
-    ): AdminAuthResponse {
+    ): AuthResponse {
         val params = mapOf(
             *bodyParams.toList().toTypedArray(),
             "identity" to JsonPrimitive(email),
@@ -35,21 +34,21 @@ class AdminAuthService(client: Client) : CrudService<Admin>(client) {
         val response = client.httpClient.post {
             url {
                 path(baseCrudPath, "auth-with-password")
-                contentType(ContentType.Application.Json)
                 queryParams.forEach { parameters.append(it.key, it.value) }
-                header("Authorization", "")
-                setBody(Json.encodeToString(params))
             }
-        }.body<AdminAuthResponse>()
+            contentType(ContentType.Application.Json)
+            header("Authorization", "")
+            setBody(Json.encodeToString(params))
+        }.body<AuthResponse>()
         return response
     }
 
-    suspend fun authRefresh(): AdminAuthResponse {
+    suspend fun authRefresh(): AuthResponse {
         val response = client.httpClient.post {
             url {
                 path(baseCrudPath, "auth-refresh")
             }
-        }.body<AdminAuthResponse>()
+        }.body<AuthResponse>()
         return response
     }
 
@@ -63,10 +62,10 @@ class AdminAuthService(client: Client) : CrudService<Admin>(client) {
         return client.httpClient.post {
             url {
                 path(baseCrudPath, "request-password-reset")
-                contentType(ContentType.Application.Json)
                 queryParams.forEach { parameters.append(it.key, it.value) }
-                setBody(Json.encodeToString(params))
             }
+            contentType(ContentType.Application.Json)
+            setBody(Json.encodeToString(params))
         }.run { true }
     }
 
@@ -76,7 +75,7 @@ class AdminAuthService(client: Client) : CrudService<Admin>(client) {
         passwordConfirm: String,
         body: Map<String, JsonElement>,
         queryParams: Map<String, String>
-    ): UserAuthService.UserAuthResponse {
+    ): AuthResponse {
         val params = mapOf(
             *body.toList().toTypedArray(),
             "token" to JsonPrimitive(passwordResetToken),
@@ -90,7 +89,7 @@ class AdminAuthService(client: Client) : CrudService<Admin>(client) {
                 queryParams.forEach { parameters.append(it.key, it.value) }
                 setBody(Json.encodeToString(params))
             }
-        }.body<UserAuthService.UserAuthResponse>()
+        }.body<AuthResponse>()
         return response
     }
 
