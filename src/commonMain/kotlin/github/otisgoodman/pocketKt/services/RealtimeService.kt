@@ -47,13 +47,11 @@ public class RealtimeService(client: PocketbaseClient) : BaseService(client) {
         UPDATE,
 
         @SerialName("delete")
-        DELETE,
-        DISCONNECT;
+        DELETE;
 
         public fun isBodyEvent(event: RealtimeActionType): Boolean {
             return when (event) {
                 CONNECT -> false
-                DISCONNECT -> false
                 else -> {
                     true
                 }
