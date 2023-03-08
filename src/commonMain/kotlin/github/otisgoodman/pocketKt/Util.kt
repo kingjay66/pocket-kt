@@ -31,8 +31,9 @@ public annotation class PocketKtDSL
 /**
  * This function does not have an automated test associated with it.
  * It is recommended to test these functions manually before release.
+ * @TODO make [Untested] require opt in
  */
-internal annotation class Untested(val reason: String = "")
+internal annotation class Untested(@Suppress("unused") val reason: String = "")
 
 public class PocketbaseException(public val reason: String) : Exception(reason) {
     public constructor(error: PocketbaseError) : this("${error.message}: ${error.code}\n ${Json.encodeToString(error.data)}")

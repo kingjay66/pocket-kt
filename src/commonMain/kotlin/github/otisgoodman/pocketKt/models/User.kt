@@ -3,9 +3,15 @@ package github.otisgoodman.pocketKt.models
 import kotlinx.serialization.Serializable
 
 
-//@TODO Document
 @Serializable
-public class User(
+/**
+ * A Pocketbase generated 'users' collection user. If you want to work with custom fields use your own object which extends this one.
+ * @param [verified] weather or not the user is verified
+ * @param [username] the user's username
+ * @param [email] the user's email
+ * @param [emailVisibility] weather or not the user's email is visible to other users when they query the user's collection
+ */
+public open class User(
     public val verified: Boolean? = null,
     public open val username: String? = null,
     public val email: String? = null,

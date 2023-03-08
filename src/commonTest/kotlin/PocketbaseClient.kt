@@ -1,6 +1,6 @@
+
 import github.otisgoodman.pocketKt.PocketbaseClient
-import github.otisgoodman.pocketKt.dsl.loginAdmin
-import github.otisgoodman.pocketKt.dsl.loginUser
+import github.otisgoodman.pocketKt.dsl.login
 import io.ktor.http.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -10,35 +10,17 @@ import kotlin.test.assertNotNull
 class PocketbaseClient {
 
     @Test
-    fun loginAsUser() = runBlocking {
+    fun login() = runBlocking {
         val client = PocketbaseClient(url)
         launch {
-            client.loginUser {
+            client.login {
                 val login = client.users.authWithPassword(userLogin.first.first, userLogin.second)
-                user = login.record
                 token = login.token
             }
             assertNotNull(client.authStore.token, "Auth store token should not be null")
-            assertNotNull(client.authStore.user, "Auth store model should not be null")
         }
         println()
     }
-
-    @Test
-    fun loginAsAdmin() = runBlocking {
-        val client = PocketbaseClient(url)
-        launch {
-            client.loginAdmin {
-                val login = client.admins.authWithPassword(adminLogin.first, adminLogin.second)
-                admin = login.record
-                token = login.token
-            }
-            assertNotNull(client.authStore.token, "Auth store token should not be null")
-            assertNotNull(client.authStore.admin, "Auth store model should not be null")
-        }
-        println()
-    }
-
     companion object {
         val url: URLBuilder.() -> Unit = {
             protocol = URLProtocol.HTTP

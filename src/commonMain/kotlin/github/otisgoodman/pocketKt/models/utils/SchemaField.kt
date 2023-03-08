@@ -1,10 +1,23 @@
 package github.otisgoodman.pocketKt.models.utils
 
+import github.otisgoodman.pocketKt.models.Collection
+import github.otisgoodman.pocketKt.models.utils.SchemaField.SchemaFieldType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonPrimitive
 
 @Serializable
+/**
+ * The schema for a [Collection]'s field
+ * @property [system] weather or not the schema change be modified
+ * @property [id] the unique ID of the schema
+ * @property [name] the name given to the schema by the creator
+ * @property [type] the [SchemaFieldType] assigned to the schema on creation
+ * @property [required] weather or not the schema is required to have a value. If this is false the [Serializable] class should have an optional(?) type
+ * @property [unique] weather or not the schema allows non-unique values.
+ * @property [options] all of the possible options data for the schema. These all depend on the [SchemaFieldType], see our [documentation]() for a full explanation.
+ * @TODO Link do docs
+ */
 public class SchemaField {
     public val system: Boolean? = null
     public val id: String? = null
@@ -17,6 +30,10 @@ public class SchemaField {
 
 
     @Serializable
+    /**
+     * All the possible options data for the schema. These all depend on the [SchemaFieldType], see our [documentation]() for a full explanation.
+     * @TODO Link do docs
+     */
     public data class SchemaOptions(
         val min: JsonPrimitive? = null,
         val max: JsonPrimitive? = null,
@@ -33,6 +50,9 @@ public class SchemaField {
     )
 
     @Serializable
+    /**
+     * The type of Schema Field selected by the creator
+     */
     public enum class SchemaFieldType {
         @SerialName("text")
         TEXT,

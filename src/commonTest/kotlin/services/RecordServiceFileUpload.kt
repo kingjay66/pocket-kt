@@ -3,16 +3,10 @@ package services
 import TestingUtils
 import github.otisgoodman.pocketKt.*
 import github.otisgoodman.pocketKt.dsl.collections.create
-import github.otisgoodman.pocketKt.dsl.loginAdmin
+import github.otisgoodman.pocketKt.dsl.login
 import github.otisgoodman.pocketKt.models.Collection
 import github.otisgoodman.pocketKt.models.Record
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
-import io.ktor.util.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
@@ -30,10 +24,9 @@ class RecordServiceFileUpload : TestingUtils() {
     @BeforeTest
     fun before() = runBlocking {
         launch {
-            client.loginAdmin {
+            client.login {
                 val login =
                     client.admins.authWithPassword(TestClient.adminLogin.first, TestClient.adminLogin.second)
-                admin = login.record
                 token = login.token
             }
 

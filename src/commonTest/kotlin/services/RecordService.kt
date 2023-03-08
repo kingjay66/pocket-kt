@@ -3,7 +3,7 @@ package services
 import TestingUtils
 import github.otisgoodman.pocketKt.*
 import github.otisgoodman.pocketKt.dsl.collections.create
-import github.otisgoodman.pocketKt.dsl.loginAdmin
+import github.otisgoodman.pocketKt.dsl.login
 import github.otisgoodman.pocketKt.models.Collection
 import github.otisgoodman.pocketKt.models.Record
 import kotlinx.coroutines.launch
@@ -24,9 +24,8 @@ class RecordService : TestingUtils() {
     @BeforeTest
     fun before() = runBlocking {
         launch {
-            client.loginAdmin {
+            client.login {
                 val login = client.admins.authWithPassword(TestClient.adminLogin.first, TestClient.adminLogin.second)
-                admin = login.record
                 token = login.token
             }
 

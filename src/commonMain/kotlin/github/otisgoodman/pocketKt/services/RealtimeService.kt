@@ -16,9 +16,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
 
-//@TODO Document
 public class RealtimeService(client: PocketbaseClient) : BaseService(client) {
 
     private val unknownKeysJson = Json {
@@ -26,7 +24,14 @@ public class RealtimeService(client: PocketbaseClient) : BaseService(client) {
     }
 
     @Serializable
+    /**
+     * The data sent when a realtime event is emitted
+     */
     public data class MessageData(val action: RealtimeActionType, val record: String?) {
+        /**
+         * Serializes the record emitted to type [T]
+         * Used to get the record from an event
+         */
         public inline fun <reified T> parseRecord(): T {
             if (action == RealtimeActionType.CONNECT) throw PocketbaseException("Connect event cannot be parsed!")
             val cleanedAction = record!!
@@ -37,6 +42,9 @@ public class RealtimeService(client: PocketbaseClient) : BaseService(client) {
     }
 
     @Serializable
+    /**
+     * The type of realtime event emitted
+     */
     public enum class RealtimeActionType {
         CONNECT,
 
@@ -49,6 +57,10 @@ public class RealtimeService(client: PocketbaseClient) : BaseService(client) {
         @SerialName("delete")
         DELETE;
 
+        /**
+         * Returns weather or not the event type is capable of containing a body or record
+         * @param [event] the event to check
+         */
         public fun isBodyEvent(event: RealtimeActionType): Boolean {
             return when (event) {
                 CONNECT -> false
@@ -69,6 +81,32 @@ public class RealtimeService(client: PocketbaseClient) : BaseService(client) {
     private val subscriptions: MutableSet<String> = mutableSetOf()
     private val sseCoroutines: MutableSet<Job> = mutableSetOf()
 
+    private suspend fun sendSubscribeRequest(): Boolean {
+        val body = mapOf(
+            "clientId" to clientId!!.toJsonPrimitive(),
+            "subscriptions" to JsonArray(subscriptions.map { it.toJsonPrimitive() })
+        )
+        val response = client.httpClient.post {
+            url {
+                path("/api/realtime")
+                contentType(ContentType.Application.Json)
+            }
+            setBody(body)
+        }
+        PocketbaseException.handle(response)
+        return true
+    }
+
+    /**
+     * Creates a realtime connection
+     * NOTE: There can only be one realtime connection going at once
+     * @sample
+     * runBlocking {
+     *      launch{
+     *          realtime.connect()
+     *      }
+     * }
+     */
     public suspend fun connect() {
         coroutineScope {
             val job = launch {
@@ -94,11 +132,21 @@ public class RealtimeService(client: PocketbaseClient) : BaseService(client) {
         }
     }
 
-
+    /**
+     * Listens for subscribed realtime events asynchronously, when one is received [callback] is run
+     * @sample
+     * runBlocking {
+     *      launch{
+     *          service.listen {
+     *              ...
+     *          }
+     *      }
+     * }
+     */
     public suspend fun listen(callback: MessageData.() -> Unit) {
+        if (!connected) PocketbaseException("You must connect to the SSE client first!")
         coroutineScope {
             val job = launch {
-                if (!connected) PocketbaseException("You must connect to the SSE client first!")
                 connection.collectLatest { event ->
                     callback(event)
                     coroutineContext.ensureActive()
@@ -108,6 +156,11 @@ public class RealtimeService(client: PocketbaseClient) : BaseService(client) {
         }
     }
 
+    /**
+     * Creates a subscription to a record or collection allowing [listen]() to received events from the desired target.
+     * @param [subscription] The record or collection to subscribe to (*) for wildcard
+     * @param [delay] The delay waited before sending the request if the client is not yet connected
+     */
     public suspend fun subscribe(subscription: String, delay: Long = 2000) {
         if (!connected || clientId == null) delay(delay)
         if (!connected) PocketbaseException("You must connect to the SSE client first!")
@@ -115,6 +168,11 @@ public class RealtimeService(client: PocketbaseClient) : BaseService(client) {
         sendSubscribeRequest()
     }
 
+    /**
+     * Creates a subscription to a record or collection allowing [listen]() to received events from the desired target.
+     * @param [subscriptionList] The records or collections to subscribe to (*) for wildcard
+     * @param [delay] The delay waited before sending the request if the client is not yet connected
+     */
     public suspend fun subscribe(delay: Long = 2000, vararg subscriptionList: String) {
         if (!connected || clientId == null) delay(delay)
         if (!connected) PocketbaseException("You must connect to the SSE client first!")
@@ -122,6 +180,11 @@ public class RealtimeService(client: PocketbaseClient) : BaseService(client) {
         sendSubscribeRequest()
     }
 
+    /**
+     * Removes a subscription to a record or collection allowing [listen]() to no longer receive events from the desired target.
+     * @param [subscription] The record or collection to unsubscribe to (*) for wildcard
+     * @param [delay] The delay waited before sending the request if the client is not yet connected
+     */
     public suspend fun unsubscribe(subscription: String, delay: Long = 2000) {
         if (!connected || clientId == null) delay(delay)
         if (!connected) PocketbaseException("You must connect to the SSE client first!")
@@ -129,6 +192,10 @@ public class RealtimeService(client: PocketbaseClient) : BaseService(client) {
         sendSubscribeRequest()
     }
 
+    /**
+     * Unsubscribes from every subscription, meaning the listen no longer receives events from any collection or record until one is subscribed to
+     * @param [delay] The delay waited before sending the request if the client is not yet connected
+     */
     public suspend fun unsubscribeAll(delay: Long = 2000) {
         if (!connected || clientId == null) delay(delay)
         if (!connected) PocketbaseException("You must connect to the SSE client first!")
@@ -136,6 +203,11 @@ public class RealtimeService(client: PocketbaseClient) : BaseService(client) {
         sendSubscribeRequest()
     }
 
+    /**
+     * Removes a subscriptions to a record or collection allowing [listen]() to no longer receive events from the desired target.
+     * @param [subscriptionList] The records or collections to unsubscribe to (*) for wildcard
+     * @param [delay] The delay waited before sending the request if the client is not yet connected
+     */
     public suspend fun unsubscribe(delay: Long = 2000, vararg subscriptionList: String) {
         if (!connected || clientId == null) delay(delay)
         if (!connected) PocketbaseException("You must connect to the SSE client first!")
@@ -143,6 +215,9 @@ public class RealtimeService(client: PocketbaseClient) : BaseService(client) {
         sendSubscribeRequest()
     }
 
+    /**
+     * Disconnects from the current realtime session,closes all active [listen] coroutines and unsubscribes from all records.
+     */
     public suspend fun disconnect() {
         subscriptions.clear()
         if (clientId != null) sendSubscribeRequest()
@@ -153,22 +228,6 @@ public class RealtimeService(client: PocketbaseClient) : BaseService(client) {
             job.cancelAndJoin()
         }
         sseCoroutines.clear()
-    }
-
-    public suspend fun sendSubscribeRequest(): Boolean {
-        val body = mapOf<String, JsonElement>(
-            "clientId" to clientId!!.toJsonPrimitive(),
-            "subscriptions" to JsonArray(subscriptions.map { it.toJsonPrimitive() })
-        )
-        val response = client.httpClient.post {
-            url {
-                path("/api/realtime")
-                contentType(ContentType.Application.Json)
-            }
-            setBody(body)
-        }
-        PocketbaseException.handle(response)
-        return true
     }
 
 }

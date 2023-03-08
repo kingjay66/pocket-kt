@@ -8,12 +8,14 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 
-//@TODO Document
 public class HealthService(client: PocketbaseClient) : BaseService(client) {
 
     @Serializable
     public data class HealthResponses(val code: Int, val message: String)
 
+    /**
+     * Returns the health status of the server.
+     */
     public suspend fun healthCheck(): HealthResponses {
         val response = client.httpClient.get {
             url {

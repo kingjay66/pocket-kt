@@ -13,7 +13,9 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
 
-//@TODO Document
+/**
+ * A group of shared of methods used by authentication services
+ */
 public interface AuthService {
 
     public val client: PocketbaseClient
@@ -35,7 +37,10 @@ public interface AuthService {
         val authProviders: List<AuthProviderInfo>
     )
 
-
+    /**
+     * returns a public list with the allowed collection authentication methods
+     * @param [collection] ID or name of the auth collection.
+     */
     public suspend fun listAuthMethods(collection: String): AuthMethodsList {
         val response = client.httpClient.get {
             url {
@@ -47,10 +52,17 @@ public interface AuthService {
     }
 
     @Untested("Requires oauth2")
-    public suspend fun listExternalAuths(collection: String, userId: String): List<ExternalAuth> {
+    /**
+     * Return a list with all external auth providers linked to a single record.
+     *
+     * Only admins and the account owner can access this action.
+     * @param [collection] ID or name of the auth collection.
+     * @param [id] ID of the auth record.
+     */
+    public suspend fun listExternalAuths(collection: String, id: String): List<ExternalAuth> {
         val response = client.httpClient.get {
             url {
-                path(recordAuthFrom(collection), userId, "external-auths")
+                path(recordAuthFrom(collection), id, "external-auths")
             }
         }
         PocketbaseException.handle(response)
@@ -58,10 +70,19 @@ public interface AuthService {
     }
 
     @Untested("Requires oauth2")
-    public suspend fun unlinkExternalAuth(collection: String, userId: String, provider: String): Boolean {
+    /**
+     * Unlink a single external OAuth2 provider from an auth record.
+     *
+     * Only admins and the account owner can access this action.
+     *
+     * @param [collection] ID or name of the auth collection.
+     * @param [id] ID of the auth record.
+     * @param [provider] The name of the auth provider to unlink, eg. google, twitter, github, etc.
+     */
+    public suspend fun unlinkExternalAuth(collection: String, id: String, provider: String): Boolean {
         val response = client.httpClient.delete {
             url {
-                path(recordAuthFrom(collection), userId, "external-auths", provider)
+                path(recordAuthFrom(collection), id, "external-auths", provider)
             }
         }
         PocketbaseException.handle(response)
@@ -70,6 +91,11 @@ public interface AuthService {
 
 
     @Untested("Requires SMTP server")
+    /**
+     * Sends auth record verification email request.
+     * @param [collection] ID or name of the auth collection.
+     * @param [email] the email address to send the password reset request (if registered).
+     */
     public suspend fun requestVerification(
         collection: String,
         email: String
@@ -89,6 +115,11 @@ public interface AuthService {
     }
 
     @Untested("Requires SMTP server")
+    /**
+     * Confirms an email address verification request.
+     * @param [collection] ID or name of the auth collection.
+     * @param [verificationToken] The token from the verification request email.
+     */
     public suspend fun confirmVerification(
         collection: String,
         verificationToken: String
@@ -107,7 +138,13 @@ public interface AuthService {
         return true
     }
 
+
     @Untested("Requires SMTP server")
+    /**
+     * Sends a password reset email to a specified auth record email.
+     * @param [collection] ID or name of the auth collection.
+     * @param [email] The email address to send the password reset request (if registered).
+     */
     public suspend fun requestPasswordReset(
         collection: String,
         email: String
@@ -127,6 +164,13 @@ public interface AuthService {
     }
 
     @Untested("Requires SMTP server")
+    /**
+     * Confirms a password reset request and sets a new auth record password.
+     * @param [collection] ID or name of the auth collection.
+     * @param [passwordResetToken] The token from the password reset request email.
+     * @param [password] The new auth record password to set
+     * @param [passwordConfirm] New auth record password confirmation.
+     */
     public suspend fun confirmPasswordReset(
         collection: String,
         passwordResetToken: String,
@@ -150,6 +194,11 @@ public interface AuthService {
     }
 
     @Untested("Requires SMTP server")
+    /**
+     * Sends an email change request for an authenticated record.
+     * @param [collection] ID or name of the auth collection.
+     * @param [newEmail] The new email address to send the change email request.
+     */
     public suspend fun requestEmailChange(
         collection: String,
         newEmail: String
@@ -169,6 +218,12 @@ public interface AuthService {
     }
 
     @Untested("Requires SMTP server")
+    /**
+     * Confirms email address change.
+     * @param [collection] ID or name of the auth collection.
+     * @param [emailChangeToken] The token from the change email request.
+     * @param [password] The auth record password to confirm the email address change.
+     */
     public suspend fun confirmEmailChange(
         collection: String, emailChangeToken: String, password: String
     ): Boolean {

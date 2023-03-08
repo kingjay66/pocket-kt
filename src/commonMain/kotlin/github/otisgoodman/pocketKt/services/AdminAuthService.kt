@@ -14,7 +14,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
 
-//@TODO Document
+
 public class AdminAuthService(client: PocketbaseClient) : CrudService<Admin>(client) {
 
     @Serializable
@@ -22,6 +22,11 @@ public class AdminAuthService(client: PocketbaseClient) : CrudService<Admin>(cli
 
     override val baseCrudPath: String = "/api/admins"
 
+    /**
+     * Authenticate a single auth record by their username/email and password.
+     * @param [email] Auth record email address.
+     * @param [password] Auth record password.
+     */
     public suspend fun authWithPassword(
         email: String, password: String
     ): AdminAuthResponse {
@@ -41,6 +46,9 @@ public class AdminAuthService(client: PocketbaseClient) : CrudService<Admin>(cli
         return response.body()
     }
 
+    /**
+     * Returns a new auth response (token and user data) for already authenticated auth record.
+     */
     public suspend fun authRefresh(): AdminAuthResponse {
         val response = client.httpClient.post {
             url {
@@ -52,6 +60,10 @@ public class AdminAuthService(client: PocketbaseClient) : CrudService<Admin>(cli
     }
 
     @Untested("Requires SMTP server")
+    /**
+     * Sends a password reset email to a specified auth record email.
+     * @param [email] The email address to send the password reset request (if registered).
+     */
     public suspend fun requestPasswordReset(
         email: String
     ): Boolean {
@@ -70,6 +82,12 @@ public class AdminAuthService(client: PocketbaseClient) : CrudService<Admin>(cli
     }
 
     @Untested("Requires SMTP server")
+    /**
+     * Confirms a password reset request and sets a new auth record password.
+     * @param [passwordResetToken] The token from the password reset request email.
+     * @param [password] The new auth record password to set.
+     * @param [passwordConfirm] New auth record password confirmation.
+     */
     public suspend fun confirmPasswordReset(
         passwordResetToken: String,
         password: String,

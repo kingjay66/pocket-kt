@@ -7,9 +7,20 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
+/**
+ * The base class used for all [Pocketbase](https://pocketbase.io) models used
+ *
+ * @property [id] The unique ID of the model
+ * @property [initialCreated] the raw created field from the model formatted in the GO timestamp format.
+ * Use [created] to access the type of [Instant]
+ * @property [initialUpdated] the raw updated field from the model formatted in the GO timestamp format.
+ * Use [updated] to access the type of [Instant]
+ *
+ */
 public open class BaseModel {
     public val id: String? = null
 
+    //    @TODO Make the two initial properties opt in
     @SerialName("created")
     public val initialCreated: String? = null
     @SerialName("updated")

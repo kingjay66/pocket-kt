@@ -4,7 +4,7 @@ import CrudServiceTestSuite
 import PocketbaseClient.Companion.adminId
 import github.otisgoodman.pocketKt.PocketbaseClient
 import github.otisgoodman.pocketKt.dsl.create
-import github.otisgoodman.pocketKt.dsl.loginAdmin
+import github.otisgoodman.pocketKt.dsl.login
 import github.otisgoodman.pocketKt.dsl.update
 import github.otisgoodman.pocketKt.models.Admin
 import kotlinx.coroutines.launch
@@ -24,11 +24,10 @@ class AdminAuthService : CrudServiceTestSuite<Admin>(client.admins, "api/admins"
     @BeforeTest
     fun before() = runBlocking {
         launch {
-            client.loginAdmin {
+            client.login {
                 val login = client.admins.authWithPassword(
                     TestClient.adminLogin.first, TestClient.adminLogin.second
                 )
-                admin = login.record
                 token = login.token
             }
 

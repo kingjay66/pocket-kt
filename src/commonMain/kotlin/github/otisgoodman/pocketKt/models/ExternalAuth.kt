@@ -4,6 +4,9 @@ import github.otisgoodman.pocketKt.models.utils.BaseModel
 import kotlinx.serialization.Serializable
 
 @Serializable
+/**
+ * A Pocketbase external authentication provider
+ */
 public open class ExternalAuth : BaseModel() {
 
     public val userId: String? = null

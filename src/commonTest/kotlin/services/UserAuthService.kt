@@ -2,10 +2,9 @@ package services
 
 import CrudServiceTestSuite
 import PocketbaseClient.Companion.testUserID
-import github.otisgoodman.pocketKt.FileUpload
 import github.otisgoodman.pocketKt.PocketbaseClient
 import github.otisgoodman.pocketKt.dsl.create
-import github.otisgoodman.pocketKt.dsl.loginUser
+import github.otisgoodman.pocketKt.dsl.login
 import github.otisgoodman.pocketKt.dsl.update
 import github.otisgoodman.pocketKt.models.User
 import kotlinx.coroutines.launch
@@ -26,11 +25,10 @@ class UserAuthService : CrudServiceTestSuite<User>(client.users, "api/collection
     @BeforeTest
     fun before() = runBlocking {
         launch {
-            client.loginUser {
+            client.login {
                 val login = client.users.authWithUsername(
                     TestClient.userLogin.first.first, TestClient.userLogin.second
                 )
-                user = login.record
                 token = login.token
             }
             val user = client.users.create {

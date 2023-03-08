@@ -8,7 +8,6 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 
-//@TODO Document
 public class CollectionService(client: PocketbaseClient) : CrudService<Collection>(client) {
 
     @Serializable
@@ -16,6 +15,11 @@ public class CollectionService(client: PocketbaseClient) : CrudService<Collectio
 
     override val baseCrudPath: String = "/api/collections"
 
+    /**
+     * Bulk imports the provided Collections configuration.
+     * @param [collections] List of collections to import (replace and create).
+     * @param [deleteMissing] If true all existing collections and schema fields that are not present in the imported configuration will be deleted, including their related records data.
+     */
     public suspend fun import(
         collections: List<Collection>,
         deleteMissing: Boolean = false,

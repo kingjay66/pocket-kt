@@ -2,7 +2,7 @@ package services
 
 import TestingUtils
 import github.otisgoodman.pocketKt.PocketbaseClient
-import github.otisgoodman.pocketKt.dsl.loginAdmin
+import github.otisgoodman.pocketKt.dsl.login
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
@@ -21,11 +21,10 @@ class SettingsService : TestingUtils() {
     @BeforeTest
     fun before() = runBlocking {
         launch {
-            client.loginAdmin {
+            client.login {
                 val login = client.admins.authWithPassword(
                     TestClient.adminLogin.first, TestClient.adminLogin.second
                 )
-                admin = login.record
                 token = login.token
             }
             val body = Json.encodeToString(BaseSettings(Meta("testApe", "http://localhost:8090", true)))

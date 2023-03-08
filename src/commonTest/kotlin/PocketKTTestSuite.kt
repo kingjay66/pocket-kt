@@ -32,7 +32,7 @@ open class CrudServiceTestSuite<T : BaseModel>(service: CrudService<T>, expected
 open class TestingUtils {
     inline fun <reified T> className() = T::class.simpleName
 
-    private class SuccessException(): Exception()
+    private class SuccessException : Exception()
 
     internal fun assertDoesNotFail(block:() -> Unit){
         assertFailsWith<SuccessException> {
@@ -67,21 +67,21 @@ open class TestingUtils {
         assertEquals(
             expected,
             actual,
-            "${key.capitalize()} should match the ${key.uppercase()} used to create the ${className<T>()}"
+            "${key.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }} should match the ${key.uppercase()} used to create the ${className<T>()}"
         )
 
     inline fun <reified T> assertMatchesCreation(key: String, expected: Boolean, actual: Boolean?) =
         assertEquals(
             expected,
             actual,
-            "${key.capitalize()} should match the ${key.uppercase()} used to create the ${className<T>()}"
+            "${key.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }} should match the ${key.uppercase()} used to create the ${className<T>()}"
         )
 
     inline fun <reified T> assertMatchesCreation(key: String, expected: Int?, actual: Int?) =
         assertEquals(
             expected,
             actual,
-            "${key.capitalize()} should match the ${key.uppercase()} used to create the ${className<T>()}"
+            "${key.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }} should match the ${key.uppercase()} used to create the ${className<T>()}"
         )
 
     fun assertEqualNullOrFalse(actual: Any?, expected: Any?, msg: String? = null) {

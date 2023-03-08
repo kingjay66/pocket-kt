@@ -1,4 +1,6 @@
-import org.jetbrains.kotlin.gradle.plugin.*
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.plugin.KotlinTargetPreset
+
 plugins {
     val kotlinVersion = "1.8.10"
     kotlin("multiplatform") version kotlinVersion
@@ -20,7 +22,7 @@ val nativeWinHTTPMainSets: MutableList<KotlinSourceSet> = mutableListOf()
 val nativeWinHTTPTestSets: MutableList<KotlinSourceSet> = mutableListOf()
 val host: Host = getHostType()
 
-repositories{
+repositories {
     mavenCentral()
 }
 
@@ -28,10 +30,10 @@ repositories{
 kotlin {
     fun addNativeTarget(preset: KotlinTargetPreset<*>, desiredHost: Host) {
         val target = targetFromPreset(preset)
-        if (desiredHost == Host.WINDOWS){
+        if (desiredHost == Host.WINDOWS) {
             nativeWinHTTPMainSets.add(target.compilations.getByName("main").kotlinSourceSets.first())
             nativeWinHTTPTestSets.add(target.compilations.getByName("test").kotlinSourceSets.first())
-        }else{
+        } else {
             nativeCIOMainSets.add(target.compilations.getByName("main").kotlinSourceSets.first())
             nativeCIOTestSets.add(target.compilations.getByName("test").kotlinSourceSets.first())
         }
@@ -48,6 +50,7 @@ kotlin {
             kotlinOptions.jvmTarget = "1.8"
         }
         withJava()
+
     }
 
 
@@ -64,19 +67,18 @@ kotlin {
     addNativeTarget(presets["iosX64"], Host.MAC_OS)
     addNativeTarget(presets["iosSimulatorArm64"], Host.MAC_OS)
 
-//    if (!testing) {
-//        // watchOS
-//        addNativeTarget(presets["watchosX86"], Host.MAC_OS)
-//        addNativeTarget(presets["watchosX64"], Host.MAC_OS)
-//        addNativeTarget(presets["watchosArm32"], Host.MAC_OS)
-//        addNativeTarget(presets["watchosArm64"], Host.MAC_OS)
-//        addNativeTarget(presets["watchosSimulatorArm64"], Host.MAC_OS)
-//
-//        // tvOS
-//        addNativeTarget(presets["tvosArm64"], Host.MAC_OS)
-//        addNativeTarget(presets["tvosX64"], Host.MAC_OS)
-//        addNativeTarget(presets["tvosSimulatorArm64"], Host.MAC_OS)
-//    }
+    // watchOS
+    addNativeTarget(presets["watchosX86"], Host.MAC_OS)
+    addNativeTarget(presets["watchosX64"], Host.MAC_OS)
+    addNativeTarget(presets["watchosArm32"], Host.MAC_OS)
+    addNativeTarget(presets["watchosArm64"], Host.MAC_OS)
+    addNativeTarget(presets["watchosSimulatorArm64"], Host.MAC_OS)
+
+    // tvOS
+    addNativeTarget(presets["tvosArm64"], Host.MAC_OS)
+    addNativeTarget(presets["tvosX64"], Host.MAC_OS)
+    addNativeTarget(presets["tvosSimulatorArm64"], Host.MAC_OS)
+
 
     // Windows
     addNativeTarget(presets["mingwX64"], Host.WINDOWS)
@@ -107,40 +109,40 @@ kotlin {
 
         val nativeCIOMain by creating {
             dependsOn(commonMain)
-            dependencies{
+            dependencies {
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
             }
         }
 
         val nativeCIOTest by creating {
             dependsOn(commonTest)
-            dependencies{
+            dependencies {
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
             }
         }
 
         val nativeWinHTTPMain by creating {
             dependsOn(commonMain)
-            dependencies{
+            dependencies {
                 implementation("io.ktor:ktor-client-winhttp:$ktorVersion")
             }
         }
 
         val nativeWinHTTPTest by creating {
             dependsOn(commonTest)
-            dependencies{
+            dependencies {
                 implementation("io.ktor:ktor-client-winhttp:$ktorVersion")
             }
         }
 
-        val jvmMain by getting {dependsOn(nativeCIOMain)}
-        val jvmTest by getting {dependsOn(nativeCIOTest)}
+        val jvmMain by getting { dependsOn(nativeCIOMain) }
+        val jvmTest by getting { dependsOn(nativeCIOTest) }
 
-        configure(nativeCIOMainSets) {dependencies{dependsOn(nativeCIOMain)}}
-        configure(nativeCIOTestSets) {dependencies {dependsOn(nativeCIOTest)}}
+        configure(nativeCIOMainSets) { dependencies { dependsOn(nativeCIOMain) } }
+        configure(nativeCIOTestSets) { dependencies { dependsOn(nativeCIOTest) } }
 
-        configure(nativeWinHTTPMainSets) {dependencies{dependsOn(nativeWinHTTPMain)}}
-        configure(nativeWinHTTPTestSets) {dependencies {dependsOn(nativeWinHTTPTest)}}
+        configure(nativeWinHTTPMainSets) { dependencies { dependsOn(nativeWinHTTPMain) } }
+        configure(nativeWinHTTPTestSets) { dependencies { dependsOn(nativeWinHTTPTest) } }
     }
 }
 

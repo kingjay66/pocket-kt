@@ -1,63 +1,36 @@
 package github.otisgoodman.pocketKt.dsl
 
-import github.otisgoodman.pocketKt.PocketbaseClient
 import github.otisgoodman.pocketKt.PocketKtDSL
+import github.otisgoodman.pocketKt.PocketbaseClient
 import github.otisgoodman.pocketKt.PocketbaseException
-import github.otisgoodman.pocketKt.models.Admin
-import github.otisgoodman.pocketKt.models.User
-
-//@TODO Document
 
 @PocketKtDSL
-public open class TokenLoginBuilder(initialToken: String?) {
+public class TokenLoginBuilder(initialToken: String?) {
 
     @PocketKtDSL
+    /**
+     * The Pocketbase login token
+     */
     public var token: String? = initialToken
 
 }
 
 @PocketKtDSL
-public class AdminLoginBuilder(initialModel: Admin?, initialToken: String?) : TokenLoginBuilder(initialToken) {
-
-    @PocketKtDSL
-    public var admin: Admin? = initialModel
-}
-
-@PocketKtDSL
-public class UserLoginBuilder(initialModel: User?, initialToken: String?) : TokenLoginBuilder(initialToken) {
-
-    @PocketKtDSL
-    public var user: User? = initialModel
-}
-
-
-@PocketKtDSL
-public inline fun PocketbaseClient.loginAdmin(setup: AdminLoginBuilder.() -> Unit = {}) {
+/**
+ * Logs into the Pocketbase client with the specified token. This is required before making any API requests that require authentication.
+ * @param [initialToken] The auth token to login in to the client with if you do not use the builder.
+ */
+public inline fun PocketbaseClient.login(initialToken: String? = null, setup: TokenLoginBuilder.() -> Unit = {}) {
     val store = this.authStore
-    val loginBuilder = AdminLoginBuilder(store.admin, store.token)
+    val loginBuilder = TokenLoginBuilder(initialToken ?: store.token)
     loginBuilder.setup()
-    this.authStore.save(admin=loginBuilder.admin,null, token=loginBuilder.token)
-    if (store.admin == null || store.token == null) throw PocketbaseException("Authorization cannot be null!")
-}
-
-@PocketKtDSL
-public inline fun PocketbaseClient.loginUser(setup: UserLoginBuilder.() -> Unit = {}) {
-    val store = this.authStore
-    val loginBuilder = UserLoginBuilder(store.user, store.token)
-    loginBuilder.setup()
-    this.authStore.save(user=loginBuilder.user,admin=null, token=loginBuilder.token)
-    if (store.user == null || store.token == null) throw PocketbaseException("Authorization cannot be null!")
-}
-
-@PocketKtDSL
-public inline fun PocketbaseClient.loginToken(setup: TokenLoginBuilder.() -> Unit = {}) {
-    val store = this.authStore
-    val loginBuilder = TokenLoginBuilder(store.token)
-    loginBuilder.setup()
-    this.authStore.save(admin = null, user = null, loginBuilder.token)
+    this.authStore.save(loginBuilder.token)
     if (store.token == null) throw PocketbaseException("Authorization cannot be null!")
 }
 
+/**
+ * Clears the current auth token from the auth store.
+ */
 public fun PocketbaseClient.logout() {
     this.authStore.clear()
 }

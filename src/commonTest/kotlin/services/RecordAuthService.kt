@@ -3,8 +3,7 @@ package services
 import TestingUtils
 import github.otisgoodman.pocketKt.PocketbaseClient
 import github.otisgoodman.pocketKt.dsl.collections.create
-import github.otisgoodman.pocketKt.dsl.loginAdmin
-import github.otisgoodman.pocketKt.dsl.loginToken
+import github.otisgoodman.pocketKt.dsl.login
 import github.otisgoodman.pocketKt.models.Collection
 import github.otisgoodman.pocketKt.models.Record
 import github.otisgoodman.pocketKt.toJsonPrimitive
@@ -47,16 +46,15 @@ class RecordAuthService : TestingUtils() {
     @BeforeTest
     fun before() = runBlocking {
         launch {
-            client.loginAdmin {
+            client.login {
                 val login = client.admins.authWithPassword(
                     TestClient.adminLogin.first,
                     TestClient.adminLogin.second
                 )
-                admin = login.record
                 token = login.token
             }
             delay(500)
-            val c = client.collections.create {
+            client.collections.create {
                 name = testCollection;type = Collection.CollectionType.AUTH
                 schema { name = "bool";booleanSchema() }
                 schema { name = "int";numberSchema {} }
@@ -76,7 +74,7 @@ class RecordAuthService : TestingUtils() {
                 )
             )
             mainRecordId = mainUser.id
-            client.loginToken {
+            client.login {
                 val login = client.records.authWithPassword<TestRecord>(
                     testCollection,
                     recordLogin.first.first,
@@ -91,12 +89,11 @@ class RecordAuthService : TestingUtils() {
         @AfterTest
         fun after(): Unit = runBlocking {
             launch {
-                client.loginAdmin {
+                client.login {
                     val login = client.admins.authWithPassword(
                         TestClient.adminLogin.first,
                         TestClient.adminLogin.second
                     )
-                    admin = login.record
                     token = login.token
                 }
                 delay(500)

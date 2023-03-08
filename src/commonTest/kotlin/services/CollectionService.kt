@@ -5,7 +5,7 @@ import github.otisgoodman.pocketKt.*
 import github.otisgoodman.pocketKt.dsl.collections.BaseSchemaBuilder
 import github.otisgoodman.pocketKt.dsl.collections.create
 import github.otisgoodman.pocketKt.dsl.collections.update
-import github.otisgoodman.pocketKt.dsl.loginAdmin
+import github.otisgoodman.pocketKt.dsl.login
 import github.otisgoodman.pocketKt.models.Collection
 import github.otisgoodman.pocketKt.models.utils.SchemaField
 import kotlinx.coroutines.launch
@@ -29,11 +29,10 @@ class CollectionService : CrudServiceTestSuite<Collection>(client.collections, "
     fun before() = runBlocking {
         launch {
             delete = true
-            client.loginAdmin {
+            client.login {
                 val login = client.admins.authWithPassword(
                     TestClient.adminLogin.first, TestClient.adminLogin.second
                 )
-                admin = login.record
                 token = login.token
             }
             val json = Json.decodeFromString<List<Collection>>(
