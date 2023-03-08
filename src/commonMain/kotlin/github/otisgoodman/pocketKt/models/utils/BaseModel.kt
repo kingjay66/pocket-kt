@@ -1,5 +1,7 @@
+@file:OptIn(InitialProperty::class)
 package github.otisgoodman.pocketKt.models.utils
 
+import github.otisgoodman.pocketKt.InitialProperty
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toInstant
 import kotlinx.serialization.SerialName
@@ -20,14 +22,17 @@ import kotlinx.serialization.Transient
 public open class BaseModel {
     public val id: String? = null
 
-    //    @TODO Make the two initial properties opt in
     @SerialName("created")
+    @InitialProperty
     public val initialCreated: String? = null
+
     @SerialName("updated")
+    @InitialProperty
     public val initialUpdated: String? = null
 
     @Transient
     public val created: Instant? = initialCreated?.replace(" ", "T")?.toInstant()
+
     @Transient
     public val updated: Instant? = initialUpdated?.replace(" ", "T")?.toInstant()
 

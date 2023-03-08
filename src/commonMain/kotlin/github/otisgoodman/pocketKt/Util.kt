@@ -18,8 +18,6 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.coroutines.CoroutineContext
 
-
-
 internal inline fun <reified T> className() = T::class::simpleName
 
 @Serializable
@@ -28,12 +26,29 @@ public data class PocketbaseError(val code: Int, val message: String, val data: 
 @DslMarker
 public annotation class PocketKtDSL
 
-/**
- * This function does not have an automated test associated with it.
- * It is recommended to test these functions manually before release.
- * @TODO make [Untested] require opt in
- */
+@RequiresOptIn(
+    level = RequiresOptIn.Level.WARNING,
+    message = "This function does not have an automated test associated with it. Use at your own risk!"
+)
+@Retention(AnnotationRetention.BINARY)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 internal annotation class Untested(@Suppress("unused") val reason: String = "")
+
+@RequiresOptIn(
+    level = RequiresOptIn.Level.ERROR,
+    message = "This property only exists for serialization purposes. Please use the non internal property unless you really know what your doing!"
+)
+@Retention(AnnotationRetention.BINARY)
+@Target(AnnotationTarget.PROPERTY)
+internal annotation class InitialProperty
+
+@RequiresOptIn(
+    level = RequiresOptIn.Level.ERROR,
+    message = "This API is experimental. It may be changed in the future without notice."
+)
+@Retention(AnnotationRetention.BINARY)
+@Target(AnnotationTarget.CLASS)
+internal annotation class PocketKtExperimental
 
 public class PocketbaseException(public val reason: String) : Exception(reason) {
     public constructor(error: PocketbaseError) : this("${error.message}: ${error.code}\n ${Json.encodeToString(error.data)}")

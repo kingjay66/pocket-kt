@@ -1,3 +1,4 @@
+import github.otisgoodman.pocketKt.PocketKtExperimental
 import github.otisgoodman.pocketKt.stores.BaseAuthStore
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -6,11 +7,11 @@ import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.Path
 
-//@TODO Cleanup and mark as opt in
 /**
  * A Pocketbase auth store that stores your tokens in the file system.
  * This only is usable in JVM versions
  */
+@PocketKtExperimental
 public class JVMFileAuthStore(
     baseToken: String?,
     fileName: String = "pocketbase_auth.data", filePath: Path? = null
