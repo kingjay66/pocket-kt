@@ -21,71 +21,56 @@ import kotlinx.serialization.json.Json
  */
 public class PocketbaseClient(baseUrl: URLBuilder.() -> Unit, lang: String = "en-US", store: BaseAuthStore? = null) {
 
-    public val baseUrl: URLBuilder.() -> Unit
-    public val lang: String
+    public val baseUrl: URLBuilder.() -> Unit = baseUrl
+    public val lang: String = lang
 
-    public var authStore: BaseAuthStore
+    public var authStore: BaseAuthStore = store ?: BaseAuthStore(null)
 
     /**
      * The API for Pocketbase [settings](https://pocketbase.io/docs/api-settings/)
      */
-    public val settings: SettingsService
+    public val settings: SettingsService = SettingsService(this)
 
     /**
      * The API for Pocketbase [admins](https://pocketbase.io/docs/api-admins/)
      */
-    public val admins: AdminAuthService
+    public val admins: AdminAuthService = AdminAuthService(this)
 
     /**
      * The API for Pocketbase [record auth](https://pocketbase.io/docs/api-records/#auth-record-actions) for the "users" collection
      *
      *  If you are looking for custom models or other auth collections go to [records]
      */
-    public val users: UserAuthService
+    public val users: UserAuthService = UserAuthService(this)
 
     /**
      * The API for Pocketbase [collections](https://pocketbase.io/docs/api-collections/)
      */
-    public val collections: CollectionService
+    public val collections: CollectionService = CollectionService(this)
 
     /**
      * The API for Pocketbase [logs](https://pocketbase.io/docs/api-logs/)
      */
-    public val logs: LogService
+    public val logs: LogService = LogService(this)
 
     /**
      * The API for Pocketbase [records](https://pocketbase.io/docs/api-records/)
      *
      * This includes both CRUD actions and collection auth methods
      */
-    public val records: RecordsService
+    public val records: RecordsService = RecordsService(this)
 
     /**
      * The API for Pocketbase [health](https://pocketbase.io/docs/api-health/)
      */
-    public val health: HealthService
+    public val health: HealthService = HealthService(this)
 
     /**
      * The API for Pocketbase [realtime](https://pocketbase.io/docs/api-realtime/)
      *
      * Adapted for [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html)
      */
-    public val realtime: RealtimeService
-
-    //  @TODO remove this init block
-    init {
-        this.baseUrl = baseUrl
-        this.lang = lang
-        this.authStore = store ?: BaseAuthStore(null)
-        this.settings = SettingsService(this)
-        this.admins = AdminAuthService(this)
-        this.users = UserAuthService(this)
-        this.collections = CollectionService(this)
-        this.logs = LogService(this)
-        this.records = RecordsService(this)
-        this.health = HealthService(this)
-        this.realtime = RealtimeService(this)
-    }
+    public val realtime: RealtimeService = RealtimeService(this)
 
     private val json: Json = Json {
         prettyPrint = true
