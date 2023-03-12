@@ -50,7 +50,6 @@ client.login(client.users.authWithUsername("user username", "password").token)
 ```
 
 === "Record Auth"
-
 ```kotlin
 val client = PocketbaseClient(...)
 //Logs in to Pocketbase as a record from an auth collection
