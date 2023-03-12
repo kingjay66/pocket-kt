@@ -39,8 +39,8 @@ internal annotation class Untested(@Suppress("unused") val reason: String = "")
     message = "This property only exists for serialization purposes. Please use the non internal property unless you really know what your doing!"
 )
 @Retention(AnnotationRetention.BINARY)
-@Target(AnnotationTarget.PROPERTY)
-internal annotation class InitialProperty
+@Target(AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION)
+internal annotation class PocketKtInternal
 
 @RequiresOptIn(
     level = RequiresOptIn.Level.ERROR,

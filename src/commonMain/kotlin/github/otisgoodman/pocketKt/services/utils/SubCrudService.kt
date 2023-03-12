@@ -1,6 +1,9 @@
+@file:OptIn(PocketKtInternal::class)
+
 package github.otisgoodman.pocketKt.services.utils
 
 import github.otisgoodman.pocketKt.FileUpload
+import github.otisgoodman.pocketKt.PocketKtInternal
 import github.otisgoodman.pocketKt.PocketbaseClient
 import github.otisgoodman.pocketKt.dsl.query.ExpandRelations
 import github.otisgoodman.pocketKt.dsl.query.Filter

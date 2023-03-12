@@ -1,7 +1,7 @@
-@file:OptIn(InitialProperty::class)
+@file:OptIn(PocketKtInternal::class)
 package github.otisgoodman.pocketKt.models.utils
 
-import github.otisgoodman.pocketKt.InitialProperty
+import github.otisgoodman.pocketKt.PocketKtInternal
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toInstant
 import kotlinx.serialization.SerialName
@@ -23,11 +23,11 @@ public open class BaseModel {
     public val id: String? = null
 
     @SerialName("created")
-    @InitialProperty
+    @PocketKtInternal
     public val initialCreated: String? = null
 
     @SerialName("updated")
-    @InitialProperty
+    @PocketKtInternal
     public val initialUpdated: String? = null
 
     @Transient

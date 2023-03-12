@@ -1,6 +1,8 @@
+
 package github.otisgoodman.pocketKt.services.utils
 
 import github.otisgoodman.pocketKt.FileUpload
+import github.otisgoodman.pocketKt.PocketKtInternal
 import github.otisgoodman.pocketKt.PocketbaseClient
 import github.otisgoodman.pocketKt.PocketbaseException
 import github.otisgoodman.pocketKt.dsl.query.ExpandRelations
@@ -14,7 +16,7 @@ import io.ktor.client.request.forms.*
 import io.ktor.http.*
 
 public abstract class BaseCrudService<T : BaseModel>(client: PocketbaseClient) : BaseService(client) {
-
+    @PocketKtInternal
     public suspend inline fun <reified T : BaseModel> _getFullList(
         path: String,
         batch: Int,
@@ -33,6 +35,7 @@ public abstract class BaseCrudService<T : BaseModel>(client: PocketbaseClient) :
         }
     }
 
+    @PocketKtInternal
     public suspend inline fun <reified T : BaseModel> _getList(
         path: String,
         page: Int,
@@ -55,6 +58,7 @@ public abstract class BaseCrudService<T : BaseModel>(client: PocketbaseClient) :
         return response.body()
     }
 
+    @PocketKtInternal
     public suspend inline fun <reified T : BaseModel> _getOne(
         path: String, id: String, expandRelations: ExpandRelations = ExpandRelations()
     ): T {
@@ -69,6 +73,7 @@ public abstract class BaseCrudService<T : BaseModel>(client: PocketbaseClient) :
         return response.body()
     }
 
+    @PocketKtInternal
     public suspend inline fun <reified T : BaseModel> _create(
         path: String,
         body: String,
@@ -86,6 +91,7 @@ public abstract class BaseCrudService<T : BaseModel>(client: PocketbaseClient) :
         return response.body()
     }
 
+    @PocketKtInternal
     public suspend inline fun <reified T : BaseModel> _update(
         path: String,
         id: String,
@@ -104,6 +110,7 @@ public abstract class BaseCrudService<T : BaseModel>(client: PocketbaseClient) :
         return response.body()
     }
 
+    @PocketKtInternal
     public suspend inline fun _delete(path: String, id: String): Boolean {
         val response = client.httpClient.delete {
             url {
@@ -114,7 +121,7 @@ public abstract class BaseCrudService<T : BaseModel>(client: PocketbaseClient) :
         return true
     }
 //@TODO Handle file uploads on native
-
+@PocketKtInternal
     public suspend inline fun <reified T : BaseModel> _create(
         path: String,
         body: Map<String, Any>,
@@ -149,7 +156,7 @@ public abstract class BaseCrudService<T : BaseModel>(client: PocketbaseClient) :
         return response.body()
     }
 
-
+    @PocketKtInternal
     public suspend inline fun <reified T : BaseModel> _update(
         path: String,
         id: String,
