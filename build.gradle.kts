@@ -5,11 +5,14 @@ plugins {
     val kotlinVersion = "1.8.10"
     kotlin("multiplatform") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
+    id("maven-publish")
 }
 
 group = "github.otisgoodman"
 version = "1.0"
 
+val GITHUB_USER: String = project.findProperty("githubUser").toString()
+val GITHUB_TOKEN: String = project.findProperty("githubToken").toString()
 
 val ktorVersion = "2.2.3"
 val kotlinSerializationVersion = "1.4.1"
@@ -144,3 +147,19 @@ fun getHostType(): Host {
 }
 
 enum class Host { WINDOWS, MAC_OS, LINUX }
+
+publishing {
+    if (GITHUB_USER != "null" || GITHUB_TOKEN != "null") {
+        repositories {
+            maven {
+                setUrl("https://maven.pkg.github.com/thebino/KMMLib")
+                credentials {
+                    username = GITHUB_USER
+                    password = GITHUB_TOKEN
+                }
+            }
+        }
+    } else {
+        println("Skipped publish because Github credentials are not set!")
+    }
+}
