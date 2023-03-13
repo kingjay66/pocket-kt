@@ -51,10 +51,10 @@ open class TestingUtils {
     protected suspend fun getTestImage(number: Int): ByteArray {
         val http = httpClient()
         return when (number) {
-            1 -> http.get("https://media.npr.org/assets/img/2017/09/12/macaca_nigra_self-portrait-3e0070aa19a7fe36e802253048411a38f14a79f8-s1100-c50.jpg")
+            1 -> http.get("http://media.npr.org/assets/img/2017/09/12/macaca_nigra_self-portrait-3e0070aa19a7fe36e802253048411a38f14a79f8-s1100-c50.jpg")
                 .body()
 
-            2 -> http.get("https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Man_of_the_woods.JPG/1200px-Man_of_the_woods.JPG")
+            2 -> http.get("http://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Man_of_the_woods.JPG/1200px-Man_of_the_woods.JPG")
                 .body()
 
             else -> {
@@ -92,7 +92,7 @@ open class TestingUtils {
 
     inline fun <reified T> printJson(obj: T?) = println(Json.encodeToString(obj))
 
-    private fun <T> compareValuesByImpl(a: T, b: T, selectors: Array<out (T) -> Comparable<*>?>): Int {
+    internal fun <T> compareValuesByImpl(a: T, b: T, selectors: Array<out (T) -> Comparable<*>?>): Int {
         for (fn in selectors) {
             val v1 = fn(a)
             val v2 = fn(b)

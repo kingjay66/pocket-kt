@@ -15,9 +15,9 @@ import PocketbaseClient as TestClient
 
 class RecordServiceFileUpload : TestingUtils() {
 
-    var modifyRecordId: String? = null
-    var imageId: String? = null
-    val testCollection = "fileupload_test"
+    private var modifyRecordId: String? = null
+    private var imageId: String? = null
+    private val testCollection = "fileupload_test"
 
     private val client = PocketbaseClient(TestClient.url)
 
@@ -114,6 +114,7 @@ class RecordServiceFileUpload : TestingUtils() {
                 assertRecordValid(record)
                 assertMatchesCreation<TestRecord>("text", "\"BYE\"", record.text)
                 assertTrue(record.file!!.contains("ape"), "File name invalid!")
+
             }
             println()
         }

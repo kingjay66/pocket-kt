@@ -8,7 +8,6 @@ package github.otisgoodman.pocketKt.stores
  *
  * @param [baseToken] The base Pocketbase authentication token to be stored when this object is created.
  *
- * @TODO Add to docs
  */
 public open class BaseAuthStore(baseToken: String?) {
     /**

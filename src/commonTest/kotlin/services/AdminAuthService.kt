@@ -19,7 +19,8 @@ class AdminAuthService : CrudServiceTestSuite<Admin>(client.admins, "api/admins"
     }
 
     private val service = client.admins
-    var testAdminId: String? = null
+    private var testAdminId: String? = null
+    private var delete = true
 
     @BeforeTest
     fun before() = runBlocking {
@@ -46,7 +47,13 @@ class AdminAuthService : CrudServiceTestSuite<Admin>(client.admins, "api/admins"
     @AfterTest
     fun after() = runBlocking {
         launch {
-            if (testAdminId != null) client.admins.delete(testAdminId!!)
+            if (delete) {
+                val admins = service.getFullList<Admin>(10)
+                val ids = admins.map { it.id }
+                ids.forEach { if (it != adminId) service.delete(it!!) }
+                val isClean = service.getFullList<Admin>(10).size == 1
+                assertTrue(isClean, "Admins should only contain the test admin!")
+            }
         }
         println()
     }
@@ -182,7 +189,8 @@ class AdminAuthService : CrudServiceTestSuite<Admin>(client.admins, "api/admins"
         assertDoesNotFail("No exceptions should be thrown") {
             launch {
                 val list = service.getFullList<Admin>(10)
-                assertEquals(list.size, 2)
+                assertEquals(2, list.size)
+                println(list)
                 list.forEach { admin -> assertAdminValid(admin) }
             }
             println()
@@ -193,6 +201,7 @@ class AdminAuthService : CrudServiceTestSuite<Admin>(client.admins, "api/admins"
     fun delete() = runBlocking {
         assertDoesNotFail("No exceptions should be thrown") {
             launch {
+                delete = false
                 val admins = service.getFullList<Admin>(10)
                 val ids = admins.map { it.id }
                 ids.forEach { if (it != adminId) service.delete(it!!) }

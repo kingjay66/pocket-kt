@@ -67,19 +67,6 @@ kotlin {
     addNativeTarget(presets["iosX64"], Host.MAC_OS)
     addNativeTarget(presets["iosSimulatorArm64"], Host.MAC_OS)
 
-    // watchOS
-    addNativeTarget(presets["watchosX86"], Host.MAC_OS)
-    addNativeTarget(presets["watchosX64"], Host.MAC_OS)
-    addNativeTarget(presets["watchosArm32"], Host.MAC_OS)
-    addNativeTarget(presets["watchosArm64"], Host.MAC_OS)
-    addNativeTarget(presets["watchosSimulatorArm64"], Host.MAC_OS)
-
-    // tvOS
-    addNativeTarget(presets["tvosArm64"], Host.MAC_OS)
-    addNativeTarget(presets["tvosX64"], Host.MAC_OS)
-    addNativeTarget(presets["tvosSimulatorArm64"], Host.MAC_OS)
-
-
     // Windows
     addNativeTarget(presets["mingwX64"], Host.WINDOWS)
 
