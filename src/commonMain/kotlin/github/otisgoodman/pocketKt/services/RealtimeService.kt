@@ -59,10 +59,9 @@ public class RealtimeService(client: PocketbaseClient) : BaseService(client) {
 
         /**
          * Returns weather or not the event type is capable of containing a body or record
-         * @param [event] the event to check
          */
-        public fun isBodyEvent(event: RealtimeActionType): Boolean {
-            return when (event) {
+        public fun isBodyEvent(): Boolean {
+            return when (this) {
                 CONNECT -> false
                 else -> {
                     true

@@ -118,7 +118,7 @@ class RealtimeService : TestingUtils() {
             launch(CoroutineName("Sub and listen")) {
                 service.subscribe(testCollection)
                 service.listen {
-                    if (action.isBodyEvent(action)) {
+                    if (action.isBodyEvent()) {
                         println("Found")
                         val record = parseRecord<TestRecord>()
                         assertRecordValid(record)
@@ -175,7 +175,7 @@ class RealtimeService : TestingUtils() {
             launch(CoroutineName("Sub and listen")) {
                 service.subscribe(testCollection)
                 service.listen {
-                    if (action.isBodyEvent(action)) {
+                    if (action.isBodyEvent()) {
                         println("Found")
                         val record = parseRecord<TestRecord>()
                         assertRecordValid(record)
@@ -223,7 +223,7 @@ class RealtimeService : TestingUtils() {
             launch(CoroutineName("Sub and listen")) {
                 service.subscribe(testCollection)
                 service.listen {
-                    if (action.isBodyEvent(action)) {
+                    if (action.isBodyEvent()) {
                         println("Found")
                         val record = parseRecord<TestRecord>()
                         assertRecordValid(record)

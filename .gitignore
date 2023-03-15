@@ -31,3 +31,4 @@ pocketbase
 /pb_migrations/*
 pocketbase_auth.data
 *.http
+*.temp

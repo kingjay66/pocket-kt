@@ -4,7 +4,7 @@ Pocket-Kt is a [multi-platform]() idiomatic Kotlin SDK for [Pocketbase](https://
 
 *This assumes you have knowledge of the [Pocketbase API](https://pocketbase.io/docs/api-records)*
 !!! Note
-    **Pocket-Kt is compatible with Pocketbase 0.12**
+    **Pocket-Kt has been tested and been verified to be compatible with Pocketbase 0.12**
 
 ### Installation
 
@@ -73,7 +73,7 @@ client.logout()
 
     ### To interact with the Pocketbase API simply use the client's services.
 
-    _Docs are still heavily work in progress, for examples check out our_ [tests](https://github.com/OtisGoodman/pocket-kt/tree/master/src/commonTest/kotlin)
+    _Docs are still heavily work in progress, for examples check out our_ [tests](https://github.com/OtisGoodman/pocket-kt/tree/master/src/commonTest/kotlin) _and other documentation pages_
     
     | Pocketbase API                                            | Pocket-Kt            |
     |-----------------------------------------------------------|----------------------|
