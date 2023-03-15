@@ -1,14 +1,48 @@
 # Overview
 
-Pocket-Kt is a [multi-platform]() idiomatic Kotlin SDK for [Pocketbase](https://pocketbase.io)
+Pocket-Kt is a [multi-platform](https://kotlinlang.org/docs/multiplatform-library.html) idiomatic Kotlin SDK
+for [Pocketbase](https://pocketbase.io)
 
 *This assumes you have knowledge of the [Pocketbase API](https://pocketbase.io/docs/api-records)*
 !!! Note
-    **Pocket-Kt has been tested and been verified to be compatible with Pocketbase 0.12**
+**Pocket-Kt has been tested and been verified to work with Pocketbase V0.12**
 
 ### Installation
 
-> TODO
+Simply add the following to your buildscript
+
+```
+dependencies {
+    implementation("github.otisgoodman:pocket-kt:1.0")
+    
+// These are required to use Pocket-Kt (Versions may not be up to date)
+    implementation("io.ktor:ktor-client-core:2.2.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+}
+```
+
+!!! Note
+GitHub packages requires users to authenticate before using a package.
+Be sure to replace `GITHUB_USERNAME` with your username, and replace `GITHUB_PERSONAL_AUTH_TOKEN` with a GitHub personal
+auth token with the `read:packages` scope.
+
+    At some point in the future I'll get around to publishing Pocket-Kt on maven central which will get rid of this hassle...   
+
+```kotlin
+repositories {
+    mavenCentral()
+    maven {
+        name = "Github Packages"
+        url = uri("https://maven.pkg.github.com/OtisGoodman/pocket-kt")
+        credentials {
+            username = "GITHUB_USERNAME"
+            password = "GITHUB_PERSONAL_AUTH_TOKEN"
+        }
+    }
+}
+```
 
 ## Usage
 
@@ -72,8 +106,9 @@ client.logout()
 !!! note
 
     ### To interact with the Pocketbase API simply use the client's services.
-
-    _Docs are still heavily work in progress, for examples check out our_ [tests](https://github.com/OtisGoodman/pocket-kt/tree/master/src/commonTest/kotlin) _and other documentation pages_
+    !!! warning
+        _Docs are still heavily work in progress, for examples check out our_ [tests](https://github.com/OtisGoodman/pocket-kt/tree/master/src/commonTest/kotlin) _and other documentation pages._
+        
     
     | Pocketbase API                                            | Pocket-Kt            |
     |-----------------------------------------------------------|----------------------|

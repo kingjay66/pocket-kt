@@ -15,7 +15,7 @@ archivesName.set("Pocket-Kt")
 
 
 val ktorVersion = "2.2.3"
-val kotlinSerializationVersion = "1.4.1"
+val kotlinSerializationVersion = "1.5.0"
 val kotlinCoroutinesVersion = "1.6.4"
 val kotlinTimeVersion = "0.4.0"
 
@@ -76,22 +76,25 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
-                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinTimeVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
+
+                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
             }
         }
 
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
+
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
-                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinTimeVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+
+                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
             }
         }
@@ -199,7 +202,7 @@ fun getHostType(): Host {
 }
 
 fun isPublicationAllowed(name: String): Boolean {
-    println(name)
+    println("name: $name")
     return when {
         name.startsWith("mingw") -> host == Host.WINDOWS
         name.startsWith("macos") ||
@@ -207,6 +210,7 @@ fun isPublicationAllowed(name: String): Boolean {
                 name.startsWith("watchos") ||
                 name.startsWith("tvos") -> host == Host.MAC_OS
 
+        name.contains("kotlinMultiplatform") -> isMainMachine
         name.contains("jvm") -> isMainMachine
         else -> host == Host.LINUX
     }

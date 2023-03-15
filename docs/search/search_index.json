@@ -1,0 +1,68 @@
+{
+  "config": {
+    "lang": [
+      "en"
+    ],
+    "separator": "[\\s\\-]+",
+    "pipeline": [
+      "stopWordFilter"
+    ]
+  },
+  "docs": [
+    {
+      "location": "",
+      "title": "Overview",
+      "text": "<p>Pocket-Kt is a multi-platform idiomatic Kotlin SDK for Pocketbase</p> <p>This assumes you have knowledge of the Pocketbase API</p> <p>Note</p> <p>Pocket-Kt has been tested and been verified to work with Pocketbase V0.12</p>"
+    },
+    {
+      "location": "#installation",
+      "title": "Installation",
+      "text": "<p>Simply add the following to your buildscript <pre><code>dependencies {\n    implementation(\"github.otisgoodman:pocket-kt:1.0\")\n\n// These are required to use Pocket-Kt (Versions may not be up to date)\n    implementation(\"io.ktor:ktor-client-core:2.2.3\")\n    implementation(\"org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4\")\n    implementation(\"org.jetbrains.kotlinx:kotlinx-datetime:0.4.0\")\n    implementation(\"org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0\")\n}\n</code></pre></p> <p>Note</p> <p>GitHub packages requires users to authenticate before using a package. Be sure to replace <code>GITHUB_USERNAME</code> with your username, and replace <code>GITHUB_PERSONAL_AUTH_TOKEN</code> with a GitHub personal auth token with the <code>read:packages</code> scope.</p> <p>At some point in the future I'll get around to publishing Pocket-Kt on maven central which will get rid of this hassle...   </p> <pre><code>repositories {\nmavenCentral()\nmaven {\nname = \"Github Packages\"\nurl = uri(\"https://maven.pkg.github.com/OtisGoodman/pocket-kt\")\ncredentials {\nusername = \"GITHUB_USERNAME\"\npassword = \"GITHUB_PERSONAL_AUTH_TOKEN\"\n}\n}\n}\n</code></pre>"
+    },
+    {
+      "location": "#usage",
+      "title": "Usage",
+      "text": ""
+    },
+    {
+      "location": "#creating-a-pocketbase-client",
+      "title": "Creating a Pocketbase Client",
+      "text": "<p>All of Pocket-Kt's methods are accessed through a PocketbaseClient.</p> <pre><code>//the default lang is en-US so this code is optional \nval client = PocketbaseClient(lang = \"en-US\", baseUrl = {\n//The url pointing to the Pocketbase server\nprotocol = URLProtocol.HTTP\nhost = \"localhost\"\nport = 8090\n})\n</code></pre>"
+    },
+    {
+      "location": "#logging-in",
+      "title": "Logging in",
+      "text": "<p>Accessing most methods in the Pocketbase API requires some sort of authentication.</p> Admin AuthUser AuthRecord Auth <pre><code>val client = PocketbaseClient(...)\n//Logs in as a Pocketbase admin\nclient.login(client.admins.authWithPassword(\"admin email\", \"admin password\").token)\n</code></pre> <pre><code>val client = PocketbaseClient(...)\n//Logs in as a Pocketbase record from the \"users\" collection\nclient.login(client.users.authWithPassword(\"user email\", \"password\").token)\n//Logs in as a Pocketbase record from the \"users\" collection \nclient.login(client.users.authWithUsername(\"user username\", \"password\").token)\n</code></pre> <pre><code>val client = PocketbaseClient(...)\n//Logs in to Pocketbase as a record from an auth collection\nclient.login(client.records.authWithPassword(\"collection name\", \"record email\", \"password\").token)\n//Logs in to Pocketbase as a record from an auth collection\nclient.login(client.records.authWithUsername(\"collection name\", \"record username\", \"password\").token)\n</code></pre>"
+    },
+    {
+      "location": "#logging-out",
+      "title": "Logging out",
+      "text": "<pre><code>val client = PocketbaseClient(...)\n//Logs the client out\nclient.logout()\n</code></pre>"
+    },
+    {
+      "location": "#interacting-with-the-pocketbase-api",
+      "title": "Interacting with the Pocketbase API",
+      "text": "<p>Note</p>"
+    },
+    {
+      "location": "#to-interact-with-the-pocketbase-api-simply-use-the-clients-services",
+      "title": "To interact with the Pocketbase API simply use the client's services.",
+      "text": "<p>Warning</p> <p>Docs are still heavily work in progress, for examples check out our tests and other documentation pages.</p> Pocketbase API Pocket-Kt Records <code>client.record</code> Realtime <code>client.realtime</code> Files <code>client.files</code> Admins <code>client.admins</code> Collections <code>client.collections</code> Settings <code>client.settings</code> Logs <code>client.logs</code> Health <code>client.health</code>"
+    },
+    {
+      "location": "realtime/",
+      "title": "Realtime",
+      "text": "<p>Pocket-Kt uses coroutine flows in order to handle Pocketbase realtime events.</p>"
+    },
+    {
+      "location": "realtime/#connecting-to-the-realtime-service-and-listening-to-events",
+      "title": "Connecting to the realtime service and listening to events",
+      "text": "<pre><code>runBlocking {\nval client = PocketbaseClient(...)\nval realtime = client.realtime\n//  Creates a new coroutine which connects to the Pocketbase SSE endpoint\nlaunch { realtime.connect() }\n//  Creates a new coroutine which subscribes to a certain event and creates a new event handler\nlaunch {\n//      Subscribes to realtime events from a certain collection or record\nrealtime.subscribe(\"COLLECTION NAME OR ID FOR RECORDS COLLECTION NAME OR ID /RECORD ID\")\n//        You can subscribe to multiple events by caling subscribe again\n//      Listens for realtime events from subscribed collections or records\n//      The code inside this block will be run whenever an event is received\nrealtime.listen {\n//            The action of the event (connection to sse, create, update, delete)\nval action = action\n//            The record send by the event in string form (NOTE: this record will be null when the action is CONNECT)\nval record = record\n//This code will only be run if the event is not a connection event\nif (action.isBodyEvent()) {\n//              This parses the record string to an object\nval record = parseRecord&lt;Record&gt;()\nprintln(record.id)\n}\n}\n}\n}\n</code></pre>"
+    },
+    {
+      "location": "realtime/#disconnecting-from-the-realtime-service",
+      "title": "Disconnecting from the realtime service",
+      "text": "<pre><code>//  Disconnects from the realtime service and stops all realtime corutines \nrealtime.disconnect()\n// You can now open another realtime connection whenever you are ready\n</code></pre>"
+    }
+  ]
+}

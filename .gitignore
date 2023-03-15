@@ -32,3 +32,5 @@ pocketbase
 pocketbase_auth.data
 *.http
 *.temp
+gradle.properties
+/site
