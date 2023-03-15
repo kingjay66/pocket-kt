@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTargetPreset
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 
 plugins {
     val kotlinVersion = "1.8.10"
@@ -10,9 +11,8 @@ plugins {
 
 group = "github.otisgoodman"
 version = "1.0"
+archivesName.set("Pocket-Kt")
 
-val GITHUB_USER: String = project.findProperty("githubUser").toString()
-val GITHUB_TOKEN: String = project.findProperty("githubToken").toString()
 
 val ktorVersion = "2.2.3"
 val kotlinSerializationVersion = "1.4.1"
@@ -66,7 +66,6 @@ kotlin {
 
     // iOS
     addNativeTarget(presets["iosArm64"], Host.MAC_OS)
-    addNativeTarget(presets["iosArm32"], Host.MAC_OS)
     addNativeTarget(presets["iosX64"], Host.MAC_OS)
     addNativeTarget(presets["iosSimulatorArm64"], Host.MAC_OS)
 
@@ -135,6 +134,59 @@ kotlin {
         configure(nativeWinHTTPTestSets) { dependencies { dependsOn(nativeWinHTTPTest) } }
     }
 }
+val isMainMachine: Boolean = project.findProperty("isMainMachine").toString().toBoolean()
+
+publishing {
+    val githubUser: String = project.findProperty("githubUser").toString()
+    val githubToken: String = project.findProperty("githubToken").toString()
+
+    if (githubUser != "null" || githubToken != "null") {
+        repositories {
+            maven {
+                setUrl("https://maven.pkg.github.com/OtisGoodman/pocket-kt")
+                credentials {
+                    username = githubUser
+                    password = githubToken
+                }
+            }
+        }
+    } else {
+        println("Skipped publish because Github credentials are not set!")
+    }
+    publications {
+        withType<MavenPublication>() {
+
+
+            pom {
+                name.set("Pocket-Kt")
+                description.set("A tiny Kotlin multiplatform library that assists in saving and restoring objects to and from disk using kotlinx.coroutines, kotlinx.serialisation and okio")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://github.com/OtisGoodman/pocket-kt/blob/master/LICENSE")
+                    }
+                }
+                url.set("https://otisgoodman.github.io/Pocket-Kt/")
+                scm {
+                    connection.set("https://github.com/OtisGoodman/Pocket-Kt.git")
+                    url.set("https://github.com/OtisGoodman/Pocket-Kt")
+                }
+                developers {
+                    developer {
+                        name.set("Otis Goodman")
+                    }
+                }
+            }
+        }
+        tasks.withType(AbstractPublishToMaven::class).configureEach {
+            onlyIf { isPublicationAllowed(publication.name) }
+        }
+
+        tasks.withType(GenerateModuleMetadata::class).configureEach {
+            onlyIf { isPublicationAllowed(publication.get().name) }
+        }
+    }
+}
 
 fun getHostType(): Host {
     val hostOs = System.getProperty("os.name")
@@ -146,20 +198,17 @@ fun getHostType(): Host {
     }
 }
 
-enum class Host { WINDOWS, MAC_OS, LINUX }
+fun isPublicationAllowed(name: String): Boolean {
+    println(name)
+    return when {
+        name.startsWith("mingw") -> host == Host.WINDOWS
+        name.startsWith("macos") ||
+                name.startsWith("ios") ||
+                name.startsWith("watchos") ||
+                name.startsWith("tvos") -> host == Host.MAC_OS
 
-publishing {
-    if (GITHUB_USER != "null" || GITHUB_TOKEN != "null") {
-        repositories {
-            maven {
-                setUrl("https://maven.pkg.github.com/thebino/KMMLib")
-                credentials {
-                    username = GITHUB_USER
-                    password = GITHUB_TOKEN
-                }
-            }
-        }
-    } else {
-        println("Skipped publish because Github credentials are not set!")
+        name.contains("jvm") -> isMainMachine
+        else -> host == Host.LINUX
     }
 }
+enum class Host { WINDOWS, MAC_OS, LINUX }

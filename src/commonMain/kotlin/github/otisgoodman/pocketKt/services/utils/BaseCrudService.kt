@@ -120,7 +120,6 @@ public abstract class BaseCrudService<T : BaseModel>(client: PocketbaseClient) :
         return true
     }
 
-    //@TODO Handle file uploads on native
     @PocketKtInternal
     public suspend inline fun <reified T : BaseModel> _create(
         path: String,

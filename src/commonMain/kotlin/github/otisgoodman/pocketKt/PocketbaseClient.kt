@@ -16,8 +16,7 @@ import kotlinx.serialization.json.Json
  * Example: localhost:8090
  * @param [lang] the language of the Pocketbase server
  * @param [store] the authentication store used to store Pocketbase authentication data
- * [Example]()
- * @TODO add examples for auth store in web docs
+ *
  */
 public class PocketbaseClient(baseUrl: URLBuilder.() -> Unit, lang: String = "en-US", store: BaseAuthStore? = null) {
 

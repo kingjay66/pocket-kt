@@ -7,9 +7,7 @@ import kotlinx.serialization.json.JsonElement
 
 /**
  * This allows a [Record]'s relations to be expanded and added to the response.
- * For a more in depth tutorial see [our docs]()
  * @param [relations] See [the Pocketbase website](https://pocketbase.io/docs/expanding-relations/) for a guide on how to format the [relations].
- * @todo add docs url
  */
 public data class ExpandRelations(val relations: String? = null) {
     /**
@@ -48,7 +46,6 @@ public open class ExpandRecord<T> : Record() {
  *
  * @property [expand] the list of records that have been expanded.
  * Key: (expanded record name) -> Value: expanded record object's fields
- * @todo add docs url
  */
 public open class ExpandJsonElement : Record() {
     public val expand: Map<String, JsonElement>? = null
