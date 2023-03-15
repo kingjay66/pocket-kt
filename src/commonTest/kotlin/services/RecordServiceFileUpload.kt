@@ -50,7 +50,7 @@ class RecordServiceFileUpload : TestingUtils() {
             }
             val record = service.create<TestRecord>(
                 testCollection, mapOf("text" to "HI".toJsonPrimitive()),
-                listOf(FileUpload("file", getTestImage(1), "monkey.jpg"))
+                listOf(FileUpload("file", getTestFile(1), "monkey.jpg"))
             )
             modifyRecordId = record.id
             imageId = record.file
@@ -93,7 +93,7 @@ class RecordServiceFileUpload : TestingUtils() {
             launch {
                 val record = service.create<TestRecord>(
                     testCollection, mapOf("text" to "HELLO".toJsonPrimitive()),
-                    listOf(FileUpload("file", getTestImage(1), "monkey.jpg"))
+                    listOf(FileUpload("file", getTestFile(1), "monkey.jpg"))
                 )
                 assertRecordValid(record)
                 assertMatchesCreation<TestRecord>("text", "\"HELLO\"", record.text)
@@ -109,7 +109,7 @@ class RecordServiceFileUpload : TestingUtils() {
             launch {
                 val record = service.update<TestRecord>(
                     testCollection, modifyRecordId!!, mapOf("text" to "BYE".toJsonPrimitive()),
-                    listOf(FileUpload("file", getTestImage(2), "ape.jpg"))
+                    listOf(FileUpload("file", getTestFile(2), "ape.jpg"))
                 )
                 assertRecordValid(record)
                 assertMatchesCreation<TestRecord>("text", "\"BYE\"", record.text)

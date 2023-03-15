@@ -93,9 +93,6 @@ internal suspend inline fun ByteReadChannel.readSse(
                     is SseRawEvent.Id -> id = sseRawEvent.value
                     is SseRawEvent.Event -> event = sseRawEvent.value
                     is SseRawEvent.Data -> data = sseRawEvent.value
-                    else -> {
-                        throw PocketbaseException("Failed parse SSE data!")
-                    }
                 }
             }
         )
