@@ -14,7 +14,7 @@ version = "1.0"
 archivesName.set("Pocket-Kt")
 
 
-val ktorVersion = "2.2.3"
+val ktorVersion = "2.2.4"
 val kotlinSerializationVersion = "1.5.0"
 val kotlinCoroutinesVersion = "1.6.4"
 val kotlinTimeVersion = "0.4.0"

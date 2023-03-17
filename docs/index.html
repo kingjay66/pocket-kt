@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en" class="no-js">
 <head>
@@ -70,7 +71,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
     <nav class="md-header__inner md-grid" aria-label="Header">
-        <a href="../site" title="Pocket-kt" class="md-header__button md-logo" aria-label="Pocket-kt"
+        <a href="../mkdocs/site" title="Pocket-kt" class="md-header__button md-logo" aria-label="Pocket-kt"
            data-md-component="logo">
 
 
@@ -181,7 +182,7 @@
 
                         <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
                             <label class="md-nav__title" for="__drawer">
-                                <a href="../site" title="Pocket-kt" class="md-nav__button md-logo"
+                                <a href="../mkdocs/site" title="Pocket-kt" class="md-nav__button md-logo"
                                    aria-label="Pocket-kt" data-md-component="logo">
 
 
@@ -222,7 +223,7 @@
                                         <span class="md-nav__icon md-icon"></span>
                                     </label>
 
-                                    <a href="../site" class="md-nav__link md-nav__link--active">
+                                    <a href="../mkdocs/site" class="md-nav__link md-nav__link--active">
                                         Overview
                                     </a>
 
@@ -413,34 +414,35 @@
                     <h1 id="overview">Overview</h1>
                     <p>Pocket-Kt is a <a
                             href="https://kotlinlang.org/docs/multiplatform-library.html">multi-platform</a> idiomatic
-                        Kotlin SDK for <a href="https://pocketbase.io">Pocketbase</a></p>
+                        Kotlin SDK
+                        for <a href="https://pocketbase.io">Pocketbase</a></p>
                     <p><em>This assumes you have knowledge of the <a href="https://pocketbase.io/docs/api-records">Pocketbase
                         API</a></em></p>
                     <div class="admonition note">
                         <p class="admonition-title">Note</p>
-                        <p><strong>Pocket-Kt has been tested and been verified to work with Pocketbase V0.12</strong>
+                        <p><strong>Pocket-Kt has been tested and been verified to work with Pocketbase V0.13</strong>
                         </p>
                     </div>
                     <h3 id="installation">Installation</h3>
-                    <p>Simply add the following to your buildscript
+                    <p>Simply add the following to your buildscript</p>
                     <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a
                             id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>dependencies {
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    implementation(&quot;github.otisgoodman:pocket-kt:1.0&quot;)
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>// These are required to use Pocket-Kt (Versions may not be up to date)
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    implementation(&quot;io.ktor:ktor-client-core:2.2.3&quot;)
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    implementation(&quot;io.ktor:ktor-client-core:2.2.4&quot;)
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    implementation(&quot;org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4&quot;)
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    implementation(&quot;org.jetbrains.kotlinx:kotlinx-datetime:0.4.0&quot;)
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    implementation(&quot;org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0&quot;)
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>}
 </span></code></pre>
                     </div>
-                    </p>
                     <div class="admonition note">
                         <p class="admonition-title">Note</p>
                         <p>GitHub packages requires users to authenticate before using a package.
                             Be sure to replace <code>GITHUB_USERNAME</code> with your username, and replace <code>GITHUB_PERSONAL_AUTH_TOKEN</code>
-                            with a GitHub personal auth token with the <code>read:packages</code> scope.</p>
+                            with a GitHub personal
+                            auth token with the <code>read:packages</code> scope.</p>
                         <p>At some point in the future I'll get around to publishing Pocket-Kt on maven central which
                             will get rid of this hassle... </p>
                     </div>
