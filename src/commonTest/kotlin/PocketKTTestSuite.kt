@@ -9,7 +9,7 @@ import kotlinx.serialization.json.Json
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-
+//@TODO Clean up tests and try share more code between tests
 open class CrudServiceTestSuite<T : BaseModel>(service: CrudService<T>, expectedBasePath: String) : TestingUtils() {
 
     val crudService: CrudService<T>

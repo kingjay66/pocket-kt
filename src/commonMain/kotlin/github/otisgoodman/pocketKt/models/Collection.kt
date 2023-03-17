@@ -1,14 +1,12 @@
 package github.otisgoodman.pocketKt.models
 
 import github.otisgoodman.pocketKt.models.Collection.CollectionType
-import github.otisgoodman.pocketKt.models.Collection.CollectionType.AUTH
-import github.otisgoodman.pocketKt.models.Collection.CollectionType.BASE
+import github.otisgoodman.pocketKt.models.Collection.CollectionType.*
 import github.otisgoodman.pocketKt.models.utils.BaseModel
 import github.otisgoodman.pocketKt.models.utils.SchemaField
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-// @TODO Support the new VIEW Collection type
 @Serializable
 /**
  * The object returned from the Pocketbase Collections API
@@ -37,14 +35,14 @@ public open class Collection : BaseModel() {
     public val updateRule: String? = null
     public val deleteRule: String? = null
 
-    public val options: AuthOptions? = null
+    public val options: SchemaOptions? = null
 
 
     @Serializable
     /**
-     * a collection's options (This only applicable for collections with the type of [CollectionType.AUTH])
+     * a collection's options (This only applicable for collections with the type of [CollectionType.AUTH] and [CollectionType.VIEW])
      */
-    public data class AuthOptions(
+    public data class SchemaOptions(
         val manageRule: String? = null,
         val allowOAuth2Auth: Boolean? = null,
         val allowUsernameAuth: Boolean? = null,
@@ -52,20 +50,25 @@ public open class Collection : BaseModel() {
         val requireEmail: Boolean? = null,
         val exceptEmailDomains: List<String>? = null,
         val onlyEmailDomains: List<String>? = null,
-        val minPasswordLength: Int? = null
+        val minPasswordLength: Int? = null,
+        val query: String? = null
     )
 
     /**
      * All the supported collection types
      * @property [BASE] the base collection type, no additional options
-     * @property [AUTH] an authentication collection with [AuthOptions]
+     * @property [AUTH] an authentication collection with [SchemaOptions] (everything besides query)
+     * @property [VIEW] a view collection with [SchemaOptions] (only query)
      */
     public enum class CollectionType {
         @SerialName("base")
         BASE,
 
         @SerialName("auth")
-        AUTH;
+        AUTH,
+
+        @SerialName("view")
+        VIEW;
     }
 
     override fun toString(): String {

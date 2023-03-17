@@ -60,7 +60,7 @@ class RecordAuthService : TestingUtils() {
                 schema { name = "int";numberSchema {} }
                 createRule = "".toJsonPrimitive();updateRule = "".toJsonPrimitive();deleteRule =
                 "".toJsonPrimitive();listRule = "".toJsonPrimitive();viewRule = "".toJsonPrimitive()
-                options {
+                authCollectionOptions {
                     allowOAuth2Auth = true;allowEmailAuth = true;allowUsernameAuth = true;minPasswordLength = 8
                 }
             }

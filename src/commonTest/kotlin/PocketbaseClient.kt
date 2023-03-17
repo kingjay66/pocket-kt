@@ -9,12 +9,27 @@ import kotlin.test.assertNotNull
 class PocketbaseClient {
 
     @Test
-    fun login() = runBlocking {
+    fun loginUser() = runBlocking {
         val client = PocketbaseClient(url)
         launch {
             client.login {
                 val login = client.users.authWithPassword(userLogin.first.first, userLogin.second)
                 token = login.token
+                println(login.token)
+            }
+            assertNotNull(client.authStore.token, "Auth store token should not be null")
+        }
+        println()
+    }
+
+    @Test
+    fun loginAdmin() = runBlocking {
+        val client = PocketbaseClient(url)
+        launch {
+            client.login {
+                val login = client.admins.authWithPassword(adminLogin.first, adminLogin.second)
+                token = login.token
+                println(login.token)
             }
             assertNotNull(client.authStore.token, "Auth store token should not be null")
         }

@@ -28,13 +28,14 @@ public open class BaseCollectionBuilder {
     @PocketKtDSL
     /**
      * The [Collection]'s type.
-     * Collections of the [AUTH] collection type require custom [options].
+     * Collections of the [AUTH] collection type require custom [authCollectionOptions].
+     * Collections of the [VIEW] collection type require a query be defined in [authCollectionOptions].
      */
-    public var type: Collection.CollectionType? = null
+    public var type: CollectionType? = null
 
     @PocketKtDSL
     /**
-     * Weather or not the collection is a system generate collection.
+     * Weather or not the collection is a system generated collection.
      */
     public var system: Boolean? = null
 
@@ -42,7 +43,7 @@ public open class BaseCollectionBuilder {
     private val schemaFields = mutableListOf<BaseSchema>()
 
     @SerialName("options")
-    private var collectionOptions = Collection.AuthOptions()
+    private var collectionOptions = Collection.SchemaOptions()
 
     @PocketKtDSL
     /**
@@ -84,6 +85,7 @@ public open class BaseCollectionBuilder {
      * Adds a new [SchemaField] to the collection's schema.
      */
     public fun schema(setup: BaseSchemaBuilder.() -> Unit) {
+        if (type == VIEW) throw PocketbaseException("Schema fields are only valid for Auth and Base collections")
         val builder = BaseSchemaBuilder()
         builder.setup()
         schemaFields.add(builder.build())
@@ -93,12 +95,20 @@ public open class BaseCollectionBuilder {
     /**
      * Sets the [Collection]'s options. Only applicable to collections with the [CollectionType] of [AUTH].
      */
-    public fun options(setup: AuthOptionsBuilder.() -> Unit) {
+    public fun authCollectionOptions(setup: AuthOptionsBuilder.() -> Unit) {
         val builder = AuthOptionsBuilder()
         builder.setup()
-        if (type == AUTH) {
-            collectionOptions = builder.build()
-        } else throw PocketbaseException("Collection options is currently only for auth collection types")
+        collectionOptions = builder.build()
+    }
+
+    @PocketKtDSL
+    /**
+     * Sets the [Collection]'s options. Only applicable to collections with the [CollectionType] of [VIEW].
+     */
+    public fun viewCollectionOptions(setup: ViewOptionsBuilder.() -> Unit) {
+        val builder = ViewOptionsBuilder()
+        builder.setup()
+        collectionOptions = builder.build()
     }
 }
 
@@ -172,7 +182,7 @@ public class AuthOptionsBuilder {
      * The minimum required password length for new auth records.
      */
     public var minPasswordLength: Int? = null
-    public fun build(): Collection.AuthOptions = Collection.AuthOptions(
+    public fun build(): Collection.SchemaOptions = Collection.SchemaOptions(
         manageRule,
         allowOAuth2Auth,
         allowUsernameAuth,
@@ -184,6 +194,19 @@ public class AuthOptionsBuilder {
     )
 
 }
+
+@PocketKtDSL
+public class ViewOptionsBuilder {
+    @PocketKtDSL
+    /**
+     * The SQL SELECT statement that will be used to create the underlying view of the collection.
+     */
+    public var query: String? = null
+    public fun build(): Collection.SchemaOptions = Collection.SchemaOptions(
+        query = query
+    )
+}
+
 
 @PocketKtDSL
 public open class BaseSchemaBuilder {
@@ -357,12 +380,14 @@ public open class BaseSchemaBuilder {
      */
     public fun relationSchema(
         maxSelect: Int? = null,
+        minSelect: Int? = null,
         collectionId: String? = null,
         cascadeDelete: Boolean? = null,
+        displayFields: List<String>? = null,
         setup: RelationSchemaBuilder.() -> Unit
     ) {
         type = SchemaField.SchemaFieldType.RELATION
-        val builder = RelationSchemaBuilder(maxSelect, collectionId, cascadeDelete)
+        val builder = RelationSchemaBuilder(maxSelect, minSelect, collectionId, cascadeDelete, displayFields)
         builder.setup()
         options = builder.build()
     }
@@ -376,7 +401,6 @@ public open class BaseSchemaBuilder {
     }
 
     public fun build(): BaseSchema {
-//        @TODO Throw if view collection
         return BaseSchema(system, name, type, required, unique, options ?: SchemaField.SchemaOptions())
     }
 }
