@@ -46,7 +46,9 @@ public class SchemaField {
         val cascadeDelete: Boolean? = null,
         val maxSize: Int? = null,
         val mimeTypes: List<String>? = null,
-        val thumbs: List<String>? = null
+        val thumbs: List<String>? = null,
+        val minSelect: Int? = null,
+        val displayFields: List<String>? = null
     )
 
     @Serializable

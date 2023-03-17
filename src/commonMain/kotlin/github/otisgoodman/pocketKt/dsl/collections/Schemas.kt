@@ -112,7 +112,6 @@ public class SelectSchemaBuilder(initialValues: List<String>? = null, initialMax
     public fun build(): SchemaField.SchemaOptions = SchemaField.SchemaOptions(values = values, maxSelect = maxSelect)
 }
 
-//@TODO Add min select
 @PocketKtDSL
 public class FileSchemaBuilder(
     initialMaxSelect: Int? = null,
@@ -150,14 +149,22 @@ public class FileSchemaBuilder(
 @PocketKtDSL
 public class RelationSchemaBuilder(
     initialMaxSelect: Int? = null,
+    initialMinSelect: Int? = null,
     initialCollectionId: String? = null,
-    initialCascadeDelete: Boolean? = null
+    initialCascadeDelete: Boolean? = null,
+    initialDisplayFields: List<String>? = null
 ) {
     @PocketKtDSL
     /**
      * The maximum amount of relations that can be selected.
      */
     public var maxSelect: Int? = initialMaxSelect
+
+    @PocketKtDSL
+    /**
+     * The minimum amount of relations that can be selected.
+     */
+    public var minSelect: Int? = initialMinSelect
 
     @PocketKtDSL
     /**
@@ -170,6 +177,19 @@ public class RelationSchemaBuilder(
      * Weather or not to delete the related record when a record in this collection is deleted.
      */
     public var cascadeDelete: Boolean? = initialCascadeDelete
+
+    @PocketKtDSL
+    /**
+     * The ids of fields that are displayed in the schema colum in the admin dashboard.
+     */
+    public var displayFields: List<String>? = initialDisplayFields
+
     public fun build(): SchemaField.SchemaOptions =
-        SchemaField.SchemaOptions(maxSelect = maxSelect, collectionId = collectionId, cascadeDelete = cascadeDelete)
+        SchemaField.SchemaOptions(
+            maxSelect = maxSelect,
+            collectionId = collectionId,
+            cascadeDelete = cascadeDelete,
+            minSelect = minSelect,
+            displayFields = displayFields
+        )
 }
