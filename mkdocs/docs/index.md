@@ -13,7 +13,7 @@ Simply add the following to your buildscript
 
 ```
 dependencies {
-    implementation("github.otisgoodman:pocket-kt:1.0")
+    implementation("github.otisgoodman:pocket-kt:1.1")
     
 // These are required to use Pocket-Kt (Versions may not be up to date)
     implementation("io.ktor:ktor-client-core:2.2.4")

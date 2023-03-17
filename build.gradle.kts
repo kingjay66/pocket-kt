@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "github.otisgoodman"
-version = "1.0"
+version = "1.1"
 archivesName.set("Pocket-Kt")
 
 

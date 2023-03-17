@@ -32,10 +32,10 @@ repositories {
 
 ```kotlin
 dependencies {
-    implementation("github.otisgoodman:pocket-kt:1.0")
+    implementation("github.otisgoodman:pocket-kt:1.1")
 
 // These are required to use Pocket-Kt (Versions may not be up to date)
-    implementation("io.ktor:ktor-client-core:2.2.3")
+    implementation("io.ktor:ktor-client-core:2.2.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
